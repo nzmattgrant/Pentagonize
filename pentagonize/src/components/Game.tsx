@@ -56,8 +56,8 @@ const Game = () => {
 
   const maskStyle = {
     position: 'relative' as 'relative',
-    width: '200px',
-    height: '300px',
+    width: '302px',
+    height: '305px',
     overflow: 'hidden'
   }
 
