@@ -1,3 +1,9 @@
+.circle.black{
+    background-color: black;
+}
+.circle.white{
+    background-color: white;
+}
 .grid-container {
     perspective: 1000px;
     margin: 50px auto;

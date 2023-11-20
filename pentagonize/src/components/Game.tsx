@@ -36,6 +36,9 @@ const Game = () => {
     ] // cell row 3
   ]);
 
+  let playersTurn = 1;
+  let waitingForBoardShift = false;
+
   const getPaddedBoard = (board: number[][][]) => {
     const paddedBoard = [];
     for (const row of board) {
@@ -49,14 +52,32 @@ const Game = () => {
     return paddedBoard;
   }
 
+  const checkForWin = () => {
+    return false;
+  }
+
+  const directionClicked = (direction: string) => {
+    
+  }
+
   const slotClicked = (rowIndex: number, cellIndex: number, slotIndex: number) => {
+    if(waitingForBoardShift){
+      return;
+    }
     console.log('clicked', rowIndex, cellIndex, slotIndex);
-    return true;
+    console.log(board.length, rowIndex);
+    board[rowIndex][cellIndex][slotIndex] = playersTurn;
+    setBoard([...board]);
+    if (checkForWin()) {
+      alert(`Player ${playersTurn} wins!`);
+    }
+    playersTurn = playersTurn === 1 ? 2 : 1;
+    waitingForBoardShift = true;
   }
 
   const maskStyle = {
     position: 'relative' as 'relative',
-    width: '302px',
+    width: '305px',
     height: '305px',
     overflow: 'hidden'
   }
@@ -68,15 +89,14 @@ const Game = () => {
     transform: 'translate(-50%, -50%)',
     width: '100%',
     height: '100%',
-    backgroundColor: '#fff', // Set the background color of the center content
     border: '1px solid #000', // Set the border styles as needed
     boxSizing: 'border-box' as 'border-box',
   };
 
   return (
     <div style={maskStyle}>
-            <div style={centerContentStyles}>
-        {getPaddedBoard(board).map((row, rowIndex) => (
+      <div style={centerContentStyles}>
+        {board.map((row, rowIndex) => (
           <div className="row" key={`row-${rowIndex}`}>
             {row.map((cell, cellIndex) => (
               <div className="square" key={`square-${rowIndex}-${cellIndex}`}>
@@ -84,7 +104,7 @@ const Game = () => {
                   <div 
                   className={mappingToColor(slot) + " circle"} 
                   key={`circle-${rowIndex}-${cellIndex}-${slotIndex}`} 
-                  onClick={() => slotClicked(rowIndex-1, cellIndex-1, slotIndex)}>
+                  onClick={() => slotClicked(rowIndex, cellIndex, slotIndex)}>
               </div>
                 ))}
               </div>
