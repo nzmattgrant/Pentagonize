@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Game.css';
+import { ArrowDropDown, ArrowDropUp, ArrowRight, ArrowLeft } from '@mui/icons-material';
 
 const Game = () => {
   const enum SlotState {
@@ -97,10 +98,12 @@ const Game = () => {
     <div style={maskStyle}>
       <div style={centerContentStyles}>
         {board.map((row, rowIndex) => (
+          <>
+          <ArrowLeft />
           <div className="row" key={`row-${rowIndex}`}>
             {row.map((cell, cellIndex) => (
               <div className="square" key={`square-${rowIndex}-${cellIndex}`}>
-                {cell.map((slot, slotIndex) => (
+                {cell.concat(cell).map((slot, slotIndex) => (
                   <div 
                   className={mappingToColor(slot) + " circle"} 
                   key={`circle-${rowIndex}-${cellIndex}-${slotIndex}`} 
@@ -110,9 +113,11 @@ const Game = () => {
               </div>
             ))}
           </div>
+          <ArrowRight />
+          </>
         ))}
       </div>
-     // </div>
+    </div>
 
   );
 };
