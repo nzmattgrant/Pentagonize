@@ -6,7 +6,7 @@ const Game = () => {
   const enum SlotState {
     Empty = 0,
     WhitePiece = 1,
-    BlackPiece = 2
+    BlackPiece = 2,
   }
   const mappingToColor = (slot: number) => {
     switch (slot) {
@@ -17,24 +17,24 @@ const Game = () => {
       default:
         return '';
     }
-  }
+  };
 
   const [board, setBoard] = useState([
     [
       [0, 0, 0, 0], //cell 1
       [0, 0, 0, 0], //cell 2
-      [0, 0, 0, 0] //cell 3
+      [0, 0, 0, 0], //cell 3
     ], // cell row 1
     [
       [0, 0, 0, 0], //cell 4
       [0, 0, 0, 0], //cell 5
-      [0, 0, 0, 0] //cell 6
+      [0, 0, 0, 0], //cell 6
     ], // cell row 2
     [
       [0, 0, 0, 0], //cell 7
       [0, 0, 0, 0], //cell 8
-      [0, 0, 0, 0] //cell 9
-    ] // cell row 3
+      [0, 0, 0, 0], //cell 9
+    ], // cell row 3
   ]);
 
   let playersTurn = 1;
@@ -43,7 +43,7 @@ const Game = () => {
   const getPaddedBoard = (board: number[][][]) => {
     const paddedBoard = [];
     for (const row of board) {
-      const newRow = [...row]
+      const newRow = [...row];
       newRow.push([...newRow[row.length - 1]]);
       newRow.push([...newRow[0]]);
       paddedBoard.push(newRow);
@@ -51,18 +51,16 @@ const Game = () => {
     paddedBoard.unshift([...paddedBoard[paddedBoard.length - 1]]);
     paddedBoard.push([...paddedBoard[0]]);
     return paddedBoard;
-  }
+  };
 
   const checkForWin = () => {
     return false;
-  }
+  };
 
-  const directionClicked = (direction: string) => {
-    
-  }
+  const directionClicked = (direction: string) => {};
 
   const slotClicked = (rowIndex: number, cellIndex: number, slotIndex: number) => {
-    if(waitingForBoardShift){
+    if (waitingForBoardShift) {
       return;
     }
     console.log('clicked', rowIndex, cellIndex, slotIndex);
@@ -74,14 +72,14 @@ const Game = () => {
     }
     playersTurn = playersTurn === 1 ? 2 : 1;
     waitingForBoardShift = true;
-  }
+  };
 
   const maskStyle = {
     position: 'relative' as 'relative',
     width: '305px',
     height: '305px',
-    overflow: 'hidden'
-  }
+    overflow: 'hidden',
+  };
 
   const centerContentStyles = {
     position: 'absolute' as 'absolute',
@@ -97,28 +95,57 @@ const Game = () => {
   return (
     <div style={maskStyle}>
       <div style={centerContentStyles}>
-        {board.map((row, rowIndex) => (
-          <>
-          <ArrowLeft />
-          <div className="row" key={`row-${rowIndex}`}>
-            {row.map((cell, cellIndex) => (
-              <div className="square" key={`square-${rowIndex}-${cellIndex}`}>
-                {cell.concat(cell).map((slot, slotIndex) => (
-                  <div 
-                  className={mappingToColor(slot) + " circle"} 
-                  key={`circle-${rowIndex}-${cellIndex}-${slotIndex}`} 
-                  onClick={() => slotClicked(rowIndex, cellIndex, slotIndex)}>
-              </div>
-                ))}
+        <div className='top-row'>
+          <div>{/* empty */}</div>
+          <div>
+            <ArrowDropUp></ArrowDropUp>
+            <ArrowDropUp></ArrowDropUp>
+            <ArrowDropUp></ArrowDropUp>
+          </div>
+          <div>{/* empty */}</div>
+        </div>
+        <div className='middle-row'>
+          <div>
+            <ArrowLeft></ArrowLeft>
+            <ArrowLeft></ArrowLeft>
+            <ArrowLeft></ArrowLeft>
+          </div>
+          <div>
+            {board.map((row, rowIndex) => (
+              <div>
+                <div className='row' key={`row-${rowIndex}`}>
+                  {row.map((cell, cellIndex) => (
+                    <div className='square' key={`square-${rowIndex}-${cellIndex}`}>
+                      {cell.concat(cell).map((slot, slotIndex) => (
+                        <div
+                          className={mappingToColor(slot) + ' circle'}
+                          key={`circle-${rowIndex}-${cellIndex}-${slotIndex}`}
+                          onClick={() => slotClicked(rowIndex, cellIndex, slotIndex)}
+                        ></div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
-          <ArrowRight />
-          </>
-        ))}
+          <div>
+            <ArrowRight></ArrowRight>
+            <ArrowRight></ArrowRight>
+            <ArrowRight></ArrowRight>
+          </div>
+        </div>
+        <div className='bottom-row'>
+          <div>{/* empty */}</div>
+          <div>
+            <ArrowDropDown></ArrowDropDown>
+            <ArrowDropDown></ArrowDropDown>
+            <ArrowDropDown></ArrowDropDown>
+          </div>
+          <div>{/* empty */}</div>
+        </div>
       </div>
     </div>
-
   );
 };
 
