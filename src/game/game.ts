@@ -153,16 +153,16 @@ export class Game {
   }
 
   private render(time: number) {
-    const n = this.cols * this.rows
+    const n = this.cols * this.rows;
     const charCount = this.letterSystem == "letters-xy"
       ? 2
       : this.letterSystem == "letters" && n <= 26
         ? 1.7
-        : n <= 1000 ? n <= 100 ? n <= 10 ? 1.7 : 1.9 : 2.5 : 4
-    const fontSize = this.tileSize * (0.26 + 0.58 / charCount)
+        : n <= 1000 ? n <= 100 ? n <= 10 ? 1.7 : 1.9 : 2.5 : 4;
+    const fontSize = this.tileSize * (0.26 + 0.58 / charCount);
 
-    this.ctx.font = `${this.boldText ? 500 : 400} ${fontSize}px Lexend, Roboto, sans-serif`
-    this.ctx.clearRect(0, 0, this.width, this.height)
+    this.ctx.font = `${this.boldText ? 500 : 400} ${fontSize}px Lexend, Roboto, sans-serif`;
+    this.ctx.clearRect(0, 0, this.width, this.height);
 
     for (let i = 0; i < (this.moveAxis == Axis.Col ? this.cols : this.rows); i++) {
       const transition = this.transitions.get(i)
@@ -187,14 +187,14 @@ export class Game {
 
         const index = this.board.grid[row][col]
 
-        if (this.blind) {
-          const t = transition ? transition.time ** 0.5 : 0
-          const flash = Math.floor((t < 0.5 ? t * 2 : 2 - t * 2) * 60)
-          const gap = this.tileSize * 0.03
+        // if (this.blind) {
+        //   const t = transition ? transition.time ** 0.5 : 0
+        //   const flash = Math.floor((t < 0.5 ? t * 2 : 2 - t * 2) * 60)
+        //   const gap = this.tileSize * 0.03
 
-          this.ctx.fillStyle = `rgb(${100 + flash},${106 + flash},${118 + flash})`
-          this.ctx.fillRect(x + gap, y + gap, this.tileSize - gap * 2, this.tileSize - gap * 2)
-        } else {
+        //   this.ctx.fillStyle = `rgb(${100 + flash},${106 + flash},${118 + flash})`
+        //   this.ctx.fillRect(x + gap, y + gap, this.tileSize - gap * 2, this.tileSize - gap * 2)
+        // } else {
           const cx = (index % this.cols + 0.1) / (this.cols - 0.7)
           const cy = (Math.floor(index / this.cols) + 0.2) / (this.rows - 0.6)
 
@@ -202,30 +202,37 @@ export class Game {
           const g = cy * 228 + cx * (1 - cy) * 40
           const b = cx * 220
 
+          const xFloor = Math.floor(x);
+          const yFloor = Math.floor(y);
           this.ctx.fillStyle = `rgb(${Math.floor(r)},${Math.floor(g)},${Math.floor(b)})`
           this.ctx.fillRect(Math.floor(x), Math.floor(y), this.tileSize, this.tileSize)
           this.ctx.fillStyle = this.darkText ? "rgba(0, 0, 0, 0.9)" : "#fff"
 
-          let text = ""
-          if (this.letterSystem == "letters" && n <= 26) {
-            text = String.fromCharCode(index + 65)
-          } else if (this.letterSystem == "letters-xy") {
-            const x = Math.floor(index / this.rows)
-            const y = index % this.cols
-            text = String.fromCharCode(x + (x < 26 ? 65 : 71))
-              + String.fromCharCode(y + (y < 26 ? 65 : 71))
-          } else {
-            text = (index + 1).toString()
-          }
+          this.ctx.fillStyle = 'black';
+          const radiusSize = this.tileSize/5;
+          const margin = this.tileSize/4 - radiusSize;
+          this.ctx.arc(xFloor + radiusSize + margin, yFloor + radiusSize + margin, radiusSize, 0, 2 * Math.PI);
+          this.ctx.fill();
+          // let text = ""
+          // if (this.letterSystem == "letters" && n <= 26) {
+          //   text = String.fromCharCode(index + 65)
+          // } else if (this.letterSystem == "letters-xy") {
+          //   const x = Math.floor(index / this.rows)
+          //   const y = index % this.cols
+          //   text = String.fromCharCode(x + (x < 26 ? 65 : 71))
+          //     + String.fromCharCode(y + (y < 26 ? 65 : 71))
+          // } else {
+          //   text = (index + 1).toString()
+          // }
 
-          this.ctx.fillText(text, x + Math.floor(this.tileSize / 2), y + Math.floor(this.tileSize / 2 + fontSize * 0.05))
-        }
+          // this.ctx.fillText(text, x + Math.floor(this.tileSize / 2), y + Math.floor(this.tileSize / 2 + fontSize * 0.05))
+        //}
 
-        if ((this.noRegrips || this.highlightActive) && index == this.activeTile) {
-          const g = this.ctx.lineWidth = (this.tileSize * 0.1) | 0
-          this.ctx.strokeStyle = `rgba(255, 255, 255, ${(2 + Math.sin(time / 100)) * 0.2})`
-          this.ctx.strokeRect(x + g / 2, y + g / 2, this.tileSize - g, this.tileSize - g)
-        }
+        // if ((this.noRegrips || this.highlightActive) && index == this.activeTile) {
+        //   const g = this.ctx.lineWidth = (this.tileSize * 0.1) | 0
+        //   this.ctx.strokeStyle = `rgba(255, 255, 255, ${(2 + Math.sin(time / 100)) * 0.2})`
+        //   this.ctx.strokeRect(x + g / 2, y + g / 2, this.tileSize - g, this.tileSize - g)
+        // }
       }
     }
   }

@@ -2,7 +2,7 @@
   <div class="app">
     <div class="main-container">
       <div class="main-wrapper" :class="{ desktopMode }">
-        <h1>Loopover</h1>
+        <h1>Pentagonize</h1>
 
         <main ref="main">
           <div v-if="!desktopMode" class="top">
