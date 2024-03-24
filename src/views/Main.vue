@@ -67,23 +67,6 @@
 
     <Solutions v-if="fmc" />
 
-    <section v-if="$state.allSolves.length - $state.solves.length > 0 || $state.solves.length > sidebarLimit">
-      <transition name="record">
-        <p v-if="!desktopMode && newRecord" class="new-record">{{ newRecord }}</p>
-      </transition>
-
-      <SolveList :solves="$state.allSolves" :skip="Math.min(sidebarLimit, $state.solves.length)"
-        :limit="Math.min(Math.max($state.solves.length - sidebarLimit, 0), 10)" :fmc="fmc" inspectHint />
-    </section>
-
-    <section v-else>
-      <p>
-        Tap
-        <span style="font-size: 14px; font-weight: 600;">SCRAMBLE</span>
-        and use your fingers, mouse or arrow keys to move the tiles back to their original place.
-      </p>
-    </section>
-
     <Statistics />
 
     <Dialog title="Confirm scramble" :open.sync="confirmScrambleDialog" @confirm="$state.scramble()">

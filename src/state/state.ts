@@ -11,8 +11,8 @@ export interface Record {
 }
 
 export class State {
-  cols = 5
-  rows = 5
+  cols = 3
+  rows = 3
   custom = false
   event = EventType.Normal
   noRegrips = false
@@ -23,7 +23,7 @@ export class State {
   darkText = false
   boldText = false
   animations = true
-  transitionTime = 150
+  transitionTime = 100
   hideInspectHint = false
 
   started = false

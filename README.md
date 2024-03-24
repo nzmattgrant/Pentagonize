@@ -1,6 +1,7 @@
 # Pentagonize
 
-![Pentagonize Game](https://repository-images.githubusercontent.com/213859310/dfd40b00-4fd7-11ea-9161-836dba6c576b)
+!Pentagonize Game: A take on Pentagon with loopover mechanic. Code based on [Loopover Game]
+(https://repository-images.githubusercontent.com/213859310/dfd40b00-4fd7-11ea-9161-836dba6c576b)
 
 ## Project structure
 
@@ -10,7 +11,7 @@ Contains most of the higher-level game logic, such as the timer, various events,
 
 ### `src/game/`
 
-Contains the core game code such as move mechanics, canvas rendering and the scramble algorithm.
+Contains the core game code such as move mechanics, canvas rendering
 
 ### `src/components/`
 
