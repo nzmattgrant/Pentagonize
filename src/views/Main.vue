@@ -6,7 +6,7 @@
 
         <main ref="main">
           <div v-if="!desktopMode" class="top">
-          <Solve class="solve" />
+            <Solve class="solve" />
             <button class="btn" @click="handleMainButtonClick">{{ mainButtonText }}</button>
             <template v-if="$state.showUndoRedo">
               <div style="margin-left: 8px;" />
@@ -39,11 +39,7 @@
           <div v-if="$state.showUndoRedo" class="fmc-button-wrapper">
             <RepeatButton class="btn" @click="$state.undo()" :disabled="!$state.undoable">Undo</RepeatButton>
             <RepeatButton class="btn" @click="$state.redo()" :disabled="!$state.redoable">Redo</RepeatButton>
-            <button
-              class="btn"
-              @click="$state.undo(true)"
-              :disabled="!$state.undoable"
-            >Undo to start</button>
+            <button class="btn" @click="$state.undo(true)" :disabled="!$state.undoable">Undo to start</button>
             <button class="btn" @click="$state.redo(true)" :disabled="!$state.redoable">Redo to end</button>
           </div>
 
@@ -60,11 +56,7 @@
 
     <section v-if="$state.inspecting" class="inspect">
       <time>{{ formatDate($state.startTime) }}</time>
-      <button
-        class="btn"
-        @click="$state.replay(!$state.replaying)"
-        :disabled="!$state.redoable && !$state.replaying"
-      >
+      <button class="btn" @click="$state.replay(!$state.replaying)" :disabled="!$state.redoable && !$state.replaying">
         <svg height="24" viewBox="0 0 24 24" width="24" style="margin-right: 8px;">
           <path v-if="!$state.replaying" d="M8 5v14l11-7z" fill="currentColor" />
           <path v-else d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="currentColor" />
@@ -75,20 +67,13 @@
 
     <Solutions v-if="fmc" />
 
-    <section
-      v-if="$state.allSolves.length - $state.solves.length > 0 || $state.solves.length > sidebarLimit"
-    >
+    <section v-if="$state.allSolves.length - $state.solves.length > 0 || $state.solves.length > sidebarLimit">
       <transition name="record">
         <p v-if="!desktopMode && newRecord" class="new-record">{{ newRecord }}</p>
       </transition>
 
-      <SolveList
-        :solves="$state.allSolves"
-        :skip="Math.min(sidebarLimit, $state.solves.length)"
-        :limit="Math.min(Math.max($state.solves.length - sidebarLimit, 0), 10)"
-        :fmc="fmc"
-        inspectHint
-      />
+      <SolveList :solves="$state.allSolves" :skip="Math.min(sidebarLimit, $state.solves.length)"
+        :limit="Math.min(Math.max($state.solves.length - sidebarLimit, 0), 10)" :fmc="fmc" inspectHint />
     </section>
 
     <section v-else>
@@ -101,11 +86,7 @@
 
     <Statistics />
 
-    <Dialog
-      title="Confirm scramble"
-      :open.sync="confirmScrambleDialog"
-      @confirm="$state.scramble()"
-    >
+    <Dialog title="Confirm scramble" :open.sync="confirmScrambleDialog" @confirm="$state.scramble()">
       <p style="margin: 0;">Do you want to reset the current solve and generate a new scramble?</p>
     </Dialog>
 
@@ -212,8 +193,8 @@ export default class App extends Vue {
   }
 
   updateSize() {
-    const { cols, rows } = this.game
-    const aspect = cols / rows
+    const { columnCount, rowCount } = this.game
+    const aspect = columnCount / rowCount
 
     const mobileWidth = this.$el.clientWidth - 32
     const mobileHeight = Math.max(150 + 150 / aspect, innerHeight - 32 * 3 - 96)
@@ -224,16 +205,16 @@ export default class App extends Vue {
     this.desktopMode = !state.forceMobile
       // choose desktop mode if the canvas size is bigger than in mobile mode
       && (Math.min(mobileWidth / aspect, mobileHeight) < Math.min(desktopWidth / aspect, desktopHeight))
-      && rows > 1
+      && rowCount > 1
       && desktopHeight > 320 // minimum height of sidebar
 
     const width = this.desktopMode ? desktopWidth : mobileWidth
     const height = this.desktopMode ? desktopHeight : mobileHeight
 
     if (width / aspect < height) {
-      this.game.setWidth(Math.min(width, cols * 50 + 250 * Math.max(aspect, 1)))
+      this.game.setWidth(Math.min(width, columnCount * 50 + 250 * Math.max(aspect, 1)))
     } else {
-      this.game.setHeight(Math.min(height, rows * 50 + 250 / Math.min(aspect, 1)))
+      this.game.setHeight(Math.min(height, rowCount * 50 + 250 / Math.min(aspect, 1)))
     }
 
     this.mainWidth = Math.max(Math.min(mobileWidth, 320), this.game.width / devicePixelRatio)
