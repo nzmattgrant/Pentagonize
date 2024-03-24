@@ -1,6 +1,6 @@
-# Loopover
+# Pentagonize
 
-![Loopover Game](https://repository-images.githubusercontent.com/213859310/dfd40b00-4fd7-11ea-9161-836dba6c576b)
+![Pentagonize Game](https://repository-images.githubusercontent.com/213859310/dfd40b00-4fd7-11ea-9161-836dba6c576b)
 
 ## Project structure
 
