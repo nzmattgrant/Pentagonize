@@ -156,14 +156,6 @@ export class Game {
 
   private render(time: number) {
     const n = this.columnCount * this.rowCount;
-    // const charCount = this.letterSystem == "letters-xy"
-    //   ? 2
-    //   : this.letterSystem == "letters" && n <= 26
-    //     ? 1.7
-    //     : n <= 1000 ? n <= 100 ? n <= 10 ? 1.7 : 1.9 : 2.5 : 4;
-    // const fontSize = this.tileSize * (0.26 + 0.58 / charCount);
-
-    //this.ctx.font = `${this.boldText ? 500 : 400} ${fontSize}px Lexend, Roboto, sans-serif`;
     this.ctx.clearRect(0, 0, this.width, this.height);
 
     for (let i = 0; i < (this.moveAxis == Axis.Col ? this.columnCount : this.rowCount); i++) {
@@ -189,14 +181,6 @@ export class Game {
 
         const index = this.board.grid[row][col];
 
-        // if (this.blind) {
-        //   const t = transition ? transition.time ** 0.5 : 0
-        //   const flash = Math.floor((t < 0.5 ? t * 2 : 2 - t * 2) * 60)
-        //   const gap = this.tileSize * 0.03
-
-        //   this.ctx.fillStyle = `rgb(${100 + flash},${106 + flash},${118 + flash})`
-        //   this.ctx.fillRect(x + gap, y + gap, this.tileSize - gap * 2, this.tileSize - gap * 2)
-        // } else {
         const cx = ((index % this.columnCount) + 0.1) / (this.columnCount - 0.7);
         const cy = (Math.floor(index / this.columnCount) + 0.2) / (this.rowCount - 0.6);
 
@@ -214,29 +198,23 @@ export class Game {
         this.ctx.fillStyle = 'black';
         const radiusSize = this.tileSize / 5;
         const margin = this.tileSize / 4 - radiusSize;
+        this.ctx.beginPath();
         this.ctx.arc(xFloor + radiusSize + margin, yFloor + radiusSize + margin, radiusSize, 0, 2 * Math.PI);
         this.ctx.fill();
         this.ctx.closePath();
-        // let text = ""
-        // if (this.letterSystem == "letters" && n <= 26) {
-        //   text = String.fromCharCode(index + 65)
-        // } else if (this.letterSystem == "letters-xy") {
-        //   const x = Math.floor(index / this.rows)
-        //   const y = index % this.cols
-        //   text = String.fromCharCode(x + (x < 26 ? 65 : 71))
-        //     + String.fromCharCode(y + (y < 26 ? 65 : 71))
-        // } else {
-        //   text = (index + 1).toString()
-        // }
+        this.ctx.beginPath();
+        this.ctx.arc(xFloor + radiusSize * 3 + margin * 3, yFloor + radiusSize + margin, radiusSize, 0, 2 * Math.PI);
+        this.ctx.fill();
+        this.ctx.closePath();
+        this.ctx.beginPath();
+        this.ctx.arc(xFloor + radiusSize + margin, yFloor + radiusSize * 3 + margin * 3, radiusSize, 0, 2 * Math.PI);
+        this.ctx.fill();
+        this.ctx.closePath();
+        this.ctx.beginPath();
+        this.ctx.arc(xFloor + radiusSize * 3 + margin * 3, yFloor + radiusSize * 3 + margin * 3, radiusSize, 0, 2 * Math.PI);
+        this.ctx.fill();
+        this.ctx.closePath();
 
-        // this.ctx.fillText(text, x + Math.floor(this.tileSize / 2), y + Math.floor(this.tileSize / 2 + fontSize * 0.05))
-        //}
-
-        // if ((this.noRegrips || this.highlightActive) && index == this.activeTile) {
-        //   const g = this.ctx.lineWidth = (this.tileSize * 0.1) | 0
-        //   this.ctx.strokeStyle = `rgba(255, 255, 255, ${(2 + Math.sin(time / 100)) * 0.2})`
-        //   this.ctx.strokeRect(x + g / 2, y + g / 2, this.tileSize - g, this.tileSize - g)
-        // }
       }
     }
   }
