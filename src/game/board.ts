@@ -1,75 +1,87 @@
-import { Axis, Move } from "."
+import { Axis, Move } from '.';
 import { Tile } from './tile';
 
 export class Board {
-  grid: number[][]
+  grid: number[][];
   gridTiles: Tile[][] = [];
 
   static deserialize(grid: number[][]) {
-    return new Board(grid[0].length, grid.length, grid)
+    return new Board(grid[0].length, grid.length, grid);
   }
 
   constructor(public cols: number, public rows: number, grid?: number[][]) {
-    if (grid) this.grid = grid
+    if (grid) this.grid = grid;
     else this.grid = [...Array(rows)].map((_, r) => [...Array(cols)].map((_, c) => r * cols + c));
     this.gridTiles = [];
-    for(let i = 0; i< cols; i++){
-      const column = [];
-      for(let j = 0; j < rows; j++){
-        column.push(new Tile());
+    for (let i = 0; i < rows; i++) {
+      const row = [];
+      for (let j = 0; j < cols; j++) {
+        row.push(new Tile());
       }
-      this.gridTiles.push(column);
+      this.gridTiles.push(row);
     }
   }
 
   serialize() {
-    return this.clone().grid
+    return this.clone().grid;
   }
 
   clone() {
-    return new Board(this.cols, this.rows, this.grid.map(row => [...row]))
+    return new Board(
+      this.cols,
+      this.rows,
+      this.grid.map((row) => [...row])
+    );
   }
 
   reset() {
-    for (let i = this.cols * this.rows; i--;) {
-      this.grid[Math.floor(i / this.cols)][i % this.cols] = i
+    for (let i = this.cols * this.rows; i--; ) {
+      this.grid[Math.floor(i / this.cols)][i % this.cols] = i;
     }
   }
 
   move(move: Move) {
     if (move.axis == Axis.Row) {
-      this.moveRow(move.index, move.n)
+      this.moveRow(move.index, move.n);
     } else {
-      this.moveColumn(move.index, move.n)
+      this.moveColumn(move.index, move.n);
     }
   }
 
   isSolved() {
-    for (let i = this.cols * this.rows; i--;) {
-      if (this.grid[Math.floor(i / this.cols)][i % this.cols] != i) return false
+    for (let i = this.cols * this.rows; i--; ) {
+      if (this.grid[Math.floor(i / this.cols)][i % this.cols] != i) return false;
     }
-    return true
+    return true;
   }
 
   pos(index: number) {
-    for (let row = this.rows; row--;) {
-      for (let col = this.cols; col--;) {
-        if (this.grid[row][col] == index) return { row, col }
+    for (let row = this.rows; row--; ) {
+      for (let col = this.cols; col--; ) {
+        if (this.grid[row][col] == index) return { row, col };
       }
     }
-    throw new Error("Index not found in board")
+    throw new Error('Index not found in board');
   }
 
   private moveRow(index: number, n: number) {
-    const row = this.grid[index]
-    this.grid[index] = row.map((_, i) => row[((i - n) % this.cols + this.cols) % this.cols])
+    let row = this.grid[index];
+    this.grid[index] = row.map((_, i) => row[(((i - n) % this.cols) + this.cols) % this.cols]);
+    const tileRow = this.gridTiles[index];
+    this.gridTiles[index] = tileRow.map((_, i) => tileRow[(((i - n) % this.cols) + this.cols) % this.cols]);
   }
 
   private moveColumn(index: number, n: number) {
-    const col = [...Array(this.rows)].map((_, i) => this.grid[i][index])
+    const col = [...Array(this.rows)].map((_, i) => this.grid[i][index]);
 
     for (let i = 0; i < this.rows; i++) {
-      this.grid[i][index] = col[((i - n) % this.rows + this.rows) % this.rows]
+      this.grid[i][index] = col[(((i - n) % this.rows) + this.rows) % this.rows];
+    }
+
+    const tileCol = [...Array(this.rows)].map((_, i) => this.gridTiles[i][index]);
+
+    for (let i = 0; i < this.rows; i++) {
+      this.gridTiles[i][index] = tileCol[(((i - n) % this.rows) + this.rows) % this.rows];
     }
   }
 }
