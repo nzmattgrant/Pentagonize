@@ -1,7 +1,9 @@
 import { Axis, Move } from "."
+import { Tile } from './tile';
 
 export class Board {
   grid: number[][]
+  gridTiles: Tile[][] = [];
 
   static deserialize(grid: number[][]) {
     return new Board(grid[0].length, grid.length, grid)
@@ -9,7 +11,15 @@ export class Board {
 
   constructor(public cols: number, public rows: number, grid?: number[][]) {
     if (grid) this.grid = grid
-    else this.grid = [...Array(rows)].map((_, r) => [...Array(cols)].map((_, c) => r * cols + c))
+    else this.grid = [...Array(rows)].map((_, r) => [...Array(cols)].map((_, c) => r * cols + c));
+    this.gridTiles = [];
+    for(let i = 0; i< cols; i++){
+      const column = [];
+      for(let j = 0; j < rows; j++){
+        column.push(new Tile());
+      }
+      this.gridTiles.push(column);
+    }
   }
 
   serialize() {
