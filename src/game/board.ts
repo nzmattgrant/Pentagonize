@@ -4,6 +4,7 @@ import { Tile } from './tile';
 export class Board {
   grid: number[][];
   gridTiles: Tile[][] = [];
+  public tileSize: number = 2;//nxn because square tiles
 
   static deserialize(grid: number[][]) {
     return new Board(grid[0].length, grid.length, grid);
@@ -16,7 +17,7 @@ export class Board {
     for (let i = 0; i < rows; i++) {
       const row = [];
       for (let j = 0; j < cols; j++) {
-        row.push(new Tile());
+        row.push(new Tile(this.tileSize, this.tileSize));
       }
       this.gridTiles.push(row);
     }
@@ -62,6 +63,21 @@ export class Board {
       }
     }
     throw new Error('Index not found in board');
+  }
+
+  isGameWon(){
+    //go through the tiles 
+    //see if there are any straight lines up or down
+    const vertical = []
+    const horizontal = []
+    const leftToRightDiagonal = [];
+    const rightToLeftDiagonal = [];
+    for(let i = 0; i < this.gridTiles.length; i++){
+      const row = [];
+      for(let j = 0; j < this.gridTiles[i].length; j++){
+
+      }
+    }
   }
 
   private moveRow(index: number, n: number) {
