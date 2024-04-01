@@ -68,13 +68,27 @@ export class Board {
   isGameWon(){
     //go through the tiles 
     //see if there are any straight lines up or down
+    let board = [] as number[][];
+    let currentTileRow = 0;
+    for(let i = 0; i < this.gridTiles.length; i++){
+      const rows = new Array(this.tileSize).fill([]);
+      for(let j = 0; j < this.gridTiles[i].length; j++){
+        for(let k = 0; k < this.tileSize; k++){//tile row
+          for(let l = 0; l < this.tileSize; l++){//tile col
+            rows[k + currentTileRow].push(this.gridTiles[i][j].slots[k][l]);
+          }
+        }
+        currentTileRow+=this.tileSize;
+      }
+      board = [...board, ...rows];
+    }
     const vertical = []
     const horizontal = []
     const leftToRightDiagonal = [];
     const rightToLeftDiagonal = [];
-    for(let i = 0; i < this.gridTiles.length; i++){
+    for(let i = 0; i < board.length; i++){
       const row = [];
-      for(let j = 0; j < this.gridTiles[i].length; j++){
+      for(let j = 0; j < board.length; j++){
 
       }
     }
