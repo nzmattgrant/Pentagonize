@@ -66,6 +66,7 @@ export class Board {
   }
 
   isGameWon(){
+    const numberToConnect = 5;
     //go through the tiles 
     //see if there are any straight lines up or down
     let board = [] as number[][];
@@ -86,10 +87,33 @@ export class Board {
     const horizontal = []
     const leftToRightDiagonal = [];
     const rightToLeftDiagonal = [];
+    const isWon = false;
+    
     for(let i = 0; i < board.length; i++){
       const row = [];
-      for(let j = 0; j < board.length; j++){
-
+      for(let j = 0; j < board[i].length; j++){
+        //vertical
+        const currentNumber = board[i][j];
+        if(currentNumber === 0){
+          break;
+        }
+        let isWonHorizontal = true;
+        for(let k = 0; k < numberToConnect; k++){
+          const nextColIndex = j + k;
+          isWonHorizontal = isWonHorizontal && i < board.length && board[i][nextColIndex] === currentNumber;
+        }
+        if(isWonHorizontal){
+          return currentNumber;
+        }
+        let isWonVertical = true;
+        for(let k = 0; k < numberToConnect; k++){
+          const nextRowIndex = i + k;
+          isWonVertical = isWonVertical && nextRowIndex < board.length && board[nextRowIndex][j] === currentNumber;
+        }
+        if(isWonVertical){
+          return currentNumber;
+        }
+        
       }
     }
   }
