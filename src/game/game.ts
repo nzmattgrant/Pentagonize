@@ -199,7 +199,7 @@ export class Game {
         const radiusSize = this.tileSize / 5;
         const margin = this.tileSize / 4 - radiusSize;
         //todo make this more generic so we can have any tile size and turn it into a reusable calculation so that we can check what is being clicked on.
-        const tile = this.board.gridTiles[row][col];
+        const tile = this.board.gridTiles[col][row];
         const slots = tile.slots;
         for(let slotRow = 0; slotRow < slots.length; slotRow++){
           for(let slotCol = 0; slotCol < slots[slotRow].length; slotCol++){
@@ -403,11 +403,31 @@ export class Game {
       //split the grid width and height into the number of rows and columns
       //get the row and column from the x, y
       console.log('event', event.clientX, event.clientY);
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      const col = Math.floor(((x * devicePixelRatio) / this.width) * this.columnCount);
-      const row = Math.floor(((y * devicePixelRatio) / this.height) * this.rowCount);
+      const canvasX = event.clientX - rect.left;
+      const canvasY = event.clientY - rect.top;
+      const row = Math.floor(((canvasX * devicePixelRatio) / this.width) * this.columnCount);
+      const col = Math.floor(((canvasY * devicePixelRatio) / this.height) * this.rowCount);
+      const tile = this.board.gridTiles[row][col];
+      //get the column of the tile
+      //get the row of the tile
+      const tileX = row * this.tileSize;
+      const tileY = col * this.tileSize;
+      console.log('tileX', tileX, 'tileY', tileY, 'x', canvasX, 'y', canvasY);
+      
+      const xToCheck = canvasX -  tileX;
+      const yToCheck = canvasY - tileY;
+      console.log('xToCheck', xToCheck, 'yToCheck', yToCheck);
+      
+      //find the slot of the tile that was clicked on
+      const slots = tile.slots;
+      const slotSize = this.tileSize / slots.length;
+      console.log('slotSize', slotSize);
+      const slotX = Math.floor(xToCheck / slotSize);
+      const slotY = Math.floor(yToCheck / slotSize);
+      console.log('slotX', slotX, 'slotY', slotY);
+      slots[slotY][slotX] = slots[slotY][slotX] === 1 ? 2 : 1;
       console.log('row', row, 'col', col);
+      this.repaint = true;
 
     });
 
