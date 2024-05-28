@@ -205,28 +205,19 @@ export class Game {
           for(let slotCol = 0; slotCol < slots[slotRow].length; slotCol++){
             const colOffset = (slotRow * 2);
             const rowOffset = (slotCol * 2);
+            this.ctx.fillStyle = 'black';
+            if(slots[slotRow][slotCol] == 1){
+              this.ctx.fillStyle = 'pink';
+            }
+            if(slots[slotRow][slotCol] == 2){
+              this.ctx.fillStyle = 'blue';
+            }
             this.ctx.beginPath();
             this.ctx.arc(xFloor + radiusSize + (radiusSize * rowOffset) + margin + (margin * rowOffset), yFloor + radiusSize + (radiusSize * colOffset) + margin + (margin * colOffset), radiusSize, 0, 2 * Math.PI);
             this.ctx.fill();
             this.ctx.closePath();
           }
         }
-        // this.ctx.beginPath();
-        // this.ctx.arc(xFloor + radiusSize + margin, yFloor + radiusSize + margin, radiusSize, 0, 2 * Math.PI);
-        // this.ctx.fill();
-        // this.ctx.closePath();
-        // this.ctx.beginPath();
-        // this.ctx.arc(xFloor + radiusSize * 3 + margin * 3, yFloor + radiusSize + margin, radiusSize, 0, 2 * Math.PI);
-        // this.ctx.fill();
-        // this.ctx.closePath();
-        // this.ctx.beginPath();
-        // this.ctx.arc(xFloor + radiusSize + margin, yFloor + radiusSize * 3 + margin * 3, radiusSize, 0, 2 * Math.PI);
-        // this.ctx.fill();
-        // this.ctx.closePath();
-        // this.ctx.beginPath();
-        // this.ctx.arc(xFloor + radiusSize * 3 + margin * 3, yFloor + radiusSize * 3 + margin * 3, radiusSize, 0, 2 * Math.PI);
-        // this.ctx.fill();
-        // this.ctx.closePath();
       }
     }
   }

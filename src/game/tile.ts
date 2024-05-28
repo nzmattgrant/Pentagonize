@@ -16,5 +16,7 @@ export class Tile {
 
     public resetSlots() {   
         this.slots = Array.from({ length: this.height }, () => Array(this.width).fill(0));
+        this.slots[0][0] = 1;
+        this.slots[this.height - 1][this.width - 1] = 2;
     }
 }
