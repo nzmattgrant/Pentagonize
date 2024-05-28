@@ -403,8 +403,15 @@ export class Game {
       //split the grid width and height into the number of rows and columns
       //get the row and column from the x, y
       console.log('event', event.clientX, event.clientY);
+      const x = event.clientX;
+      const y = event.clientY;
+      if(x < rect.left || y < rect.top || x > rect.right || y > rect.bottom){
+        return;
+      }
       const canvasX = event.clientX - rect.left;
       const canvasY = event.clientY - rect.top;
+      //if the mouse is not in the canvas bounding rect then return
+
       const row = Math.floor(((canvasX * devicePixelRatio) / this.width) * this.columnCount);
       const col = Math.floor(((canvasY * devicePixelRatio) / this.height) * this.rowCount);
       const tile = this.board.gridTiles[row][col];
