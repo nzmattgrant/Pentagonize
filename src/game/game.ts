@@ -159,7 +159,7 @@ export class Game {
     this.ctx.clearRect(0, 0, this.width, this.height);
 
     for (let i = 0; i < (this.moveAxis == Axis.Col ? this.columnCount : this.rowCount); i++) {
-      const transition = this.transitions.get(i);
+      const transition = this.transitions.get(i);//so get how much we have moved in the transition
       const moveAmount = transition ? transition.value : 0;
 
       const w = this.moveAxis == Axis.Col ? this.rowCount : this.columnCount;
@@ -198,23 +198,35 @@ export class Game {
         this.ctx.fillStyle = 'black';
         const radiusSize = this.tileSize / 5;
         const margin = this.tileSize / 4 - radiusSize;
-        this.ctx.beginPath();
-        this.ctx.arc(xFloor + radiusSize + margin, yFloor + radiusSize + margin, radiusSize, 0, 2 * Math.PI);
-        this.ctx.fill();
-        this.ctx.closePath();
-        this.ctx.beginPath();
-        this.ctx.arc(xFloor + radiusSize * 3 + margin * 3, yFloor + radiusSize + margin, radiusSize, 0, 2 * Math.PI);
-        this.ctx.fill();
-        this.ctx.closePath();
-        this.ctx.beginPath();
-        this.ctx.arc(xFloor + radiusSize + margin, yFloor + radiusSize * 3 + margin * 3, radiusSize, 0, 2 * Math.PI);
-        this.ctx.fill();
-        this.ctx.closePath();
-        this.ctx.beginPath();
-        this.ctx.arc(xFloor + radiusSize * 3 + margin * 3, yFloor + radiusSize * 3 + margin * 3, radiusSize, 0, 2 * Math.PI);
-        this.ctx.fill();
-        this.ctx.closePath();
-
+        //todo make this more generic so we can have any tile size and turn it into a reusable calculation so that we can check what is being clicked on.
+        const tile = this.board.gridTiles[row][col];
+        const slots = tile.slots;
+        for(let slotRow = 0; slotRow < slots.length; slotRow++){
+          for(let slotCol = 0; slotCol < slots[slotRow].length; slotCol++){
+            const colOffset = (slotRow * 2);
+            const rowOffset = (slotCol * 2);
+            this.ctx.beginPath();
+            this.ctx.arc(xFloor + radiusSize + (radiusSize * rowOffset) + margin + (margin * rowOffset), yFloor + radiusSize + (radiusSize * colOffset) + margin + (margin * colOffset), radiusSize, 0, 2 * Math.PI);
+            this.ctx.fill();
+            this.ctx.closePath();
+          }
+        }
+        // this.ctx.beginPath();
+        // this.ctx.arc(xFloor + radiusSize + margin, yFloor + radiusSize + margin, radiusSize, 0, 2 * Math.PI);
+        // this.ctx.fill();
+        // this.ctx.closePath();
+        // this.ctx.beginPath();
+        // this.ctx.arc(xFloor + radiusSize * 3 + margin * 3, yFloor + radiusSize + margin, radiusSize, 0, 2 * Math.PI);
+        // this.ctx.fill();
+        // this.ctx.closePath();
+        // this.ctx.beginPath();
+        // this.ctx.arc(xFloor + radiusSize + margin, yFloor + radiusSize * 3 + margin * 3, radiusSize, 0, 2 * Math.PI);
+        // this.ctx.fill();
+        // this.ctx.closePath();
+        // this.ctx.beginPath();
+        // this.ctx.arc(xFloor + radiusSize * 3 + margin * 3, yFloor + radiusSize * 3 + margin * 3, radiusSize, 0, 2 * Math.PI);
+        // this.ctx.fill();
+        // this.ctx.closePath();
       }
     }
   }
@@ -389,6 +401,8 @@ export class Game {
 
     addEventListener('mouseup', () => {
       this.pointers.delete(-1);
+      //if the mouse is over a dot then toggle color change
+
     });
 
     this.canvas.addEventListener(
