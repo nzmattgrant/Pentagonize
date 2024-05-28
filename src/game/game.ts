@@ -390,9 +390,24 @@ export class Game {
       }
     });
 
-    addEventListener('mouseup', () => {
+    addEventListener('mouseup', (event) => {
       this.pointers.delete(-1);
+      event.preventDefault();
+
+      const rect = this.canvas.getBoundingClientRect();
+      //this.canvas.focus();
+
+      //this.onTouchStart(-1, event.clientX - rect.left, event.clientY - rect.top);
       //if the mouse is over a dot then toggle color change
+      //get the x, y from the canvas
+      //split the grid width and height into the number of rows and columns
+      //get the row and column from the x, y
+      console.log('event', event.clientX, event.clientY);
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const col = Math.floor(((x * devicePixelRatio) / this.width) * this.columnCount);
+      const row = Math.floor(((y * devicePixelRatio) / this.height) * this.rowCount);
+      console.log('row', row, 'col', col);
 
     });
 
