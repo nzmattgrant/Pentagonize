@@ -44,6 +44,7 @@ export class Game {
   private spaceDown = false;
   private highlightActive = false;
   private repaint = true;
+  private isMoving = false;
 
   onMove?: (move: Move, isPlayerMove: boolean) => void;
 
@@ -133,6 +134,7 @@ export class Game {
   }
 
   animatedMove(move: Move, isPlayerMove = false) {
+    this.isMoving = true;
     if (!this.move(move, isPlayerMove) || this.transitionTime == 0) return;
 
     if (move.axis != this.moveAxis) {
@@ -392,6 +394,12 @@ export class Game {
 
     addEventListener('mouseup', (event) => {
       this.pointers.delete(-1);
+      if(this.isMoving){
+        this.isMoving = false;
+        return;
+      }
+      this.isMoving = false;
+
       event.preventDefault();
 
       const rect = this.canvas.getBoundingClientRect();
