@@ -125,10 +125,12 @@ export class Board {
   }
 
   private moveRow(index: number, n: number) {
+    console.log(1, [...this.gridTiles[index]]);
     let row = this.grid[index];
     this.grid[index] = row.map((_, i) => row[(((i - n) % this.cols) + this.cols) % this.cols]);
     const tileRow = this.gridTiles[index];
     this.gridTiles[index] = tileRow.map((_, i) => tileRow[(((i - n) % this.cols) + this.cols) % this.cols]);
+    console.log(2, [...this.gridTiles[index]]);
   }
 
   private moveColumn(index: number, n: number) {

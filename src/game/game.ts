@@ -199,7 +199,7 @@ export class Game {
         const radiusSize = this.tileSize / 5;
         const margin = this.tileSize / 4 - radiusSize;
         //todo make this more generic so we can have any tile size and turn it into a reusable calculation so that we can check what is being clicked on.
-        const tile = this.board.gridTiles[col][row];
+        const tile = this.board.gridTiles[row][col];
         const slots = tile.slots;
         for(let slotRow = 0; slotRow < slots.length; slotRow++){
           for(let slotCol = 0; slotCol < slots[slotRow].length; slotCol++){
@@ -412,13 +412,13 @@ export class Game {
       const canvasY = event.clientY - rect.top;
       //if the mouse is not in the canvas bounding rect then return
 
-      const row = Math.floor(((canvasX * devicePixelRatio) / this.width) * this.columnCount);
-      const col = Math.floor(((canvasY * devicePixelRatio) / this.height) * this.rowCount);
+      const col = Math.floor(((canvasX * devicePixelRatio) / this.width) * this.columnCount);
+      const row = Math.floor(((canvasY * devicePixelRatio) / this.height) * this.rowCount);
       const tile = this.board.gridTiles[row][col];
       //get the column of the tile
       //get the row of the tile
-      const tileX = row * this.tileSize;
-      const tileY = col * this.tileSize;
+      const tileX = col * this.tileSize;
+      const tileY = row * this.tileSize;
       console.log('tileX', tileX, 'tileY', tileY, 'x', canvasX, 'y', canvasY);
       
       const xToCheck = canvasX -  tileX;
@@ -433,7 +433,7 @@ export class Game {
       const slotY = Math.floor(yToCheck / slotSize);
       console.log('slotX', slotX, 'slotY', slotY);
       slots[slotY][slotX] = slots[slotY][slotX] === 1 ? 2 : 1;
-      console.log('row', row, 'col', col);
+      console.log('row', col, 'col', row);
       this.repaint = true;
 
     });
