@@ -192,8 +192,9 @@ export class Game {
 
         const xFloor = Math.floor(x);
         const yFloor = Math.floor(y);
-        this.ctx.fillStyle = `rgb(${Math.floor(r)},${Math.floor(g)},${Math.floor(b)})`;
+        this.ctx.fillStyle = '#ff3632';//`rgb(${Math.floor(r)},${Math.floor(g)},${Math.floor(b)})`;
         this.ctx.fillRect(Math.floor(x), Math.floor(y), this.tileSize, this.tileSize);
+        this.ctx.strokeRect(Math.floor(x), Math.floor(y), this.tileSize, this.tileSize);
         this.ctx.fillStyle = this.darkText ? 'rgba(0, 0, 0, 0.9)' : '#fff';
 
         this.ctx.beginPath();
@@ -209,10 +210,10 @@ export class Game {
             const rowOffset = (slotCol * 2);
             this.ctx.fillStyle = 'black';
             if(slots[slotRow][slotCol] == 1){
-              this.ctx.fillStyle = 'pink';
+              this.ctx.fillStyle = 'darkred';
             }
             if(slots[slotRow][slotCol] == 2){
-              this.ctx.fillStyle = 'blue';
+              this.ctx.fillStyle = 'darkblue';
             }
             this.ctx.beginPath();
             this.ctx.arc(xFloor + radiusSize + (radiusSize * rowOffset) + margin + (margin * rowOffset), yFloor + radiusSize + (radiusSize * colOffset) + margin + (margin * colOffset), radiusSize, 0, 2 * Math.PI);

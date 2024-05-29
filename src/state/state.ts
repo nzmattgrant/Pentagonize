@@ -30,6 +30,7 @@ export class State {
   scrambled = false
   inSolvingPhase = false
   dnf = false
+  turn = 0;
 
   time = 0
   startTime = 0

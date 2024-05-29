@@ -157,7 +157,7 @@ export default class App extends Vue {
   get mainButtonText() {
     return state.inSolvingPhase || state.started && !state.scrambled
       ? "Done"
-      : "Scramble"
+      : "Play"
   }
 
   formatDate(time: number) {
@@ -166,13 +166,11 @@ export default class App extends Vue {
   }
 
   handleMainButtonClick() {
-    if (state.inSolvingPhase || state.started && !state.scrambled) {
-      state.done()
-    } else if (state.started && this.fmc) {
-      this.confirmScrambleDialog = true
-    } else {
-      state.scramble()
+    if(!state.started) {
+      state.start();
+      return;
     }
+    state.reset();
   }
 
   updateSize() {
