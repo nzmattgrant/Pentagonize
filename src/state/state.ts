@@ -31,6 +31,7 @@ export class State {
   inSolvingPhase = false
   dnf = false
   turn = 0;
+  placing = true;
 
   time = 0
   startTime = 0
@@ -115,6 +116,8 @@ export class State {
 
   start(time = performance.now()) {
     this.started = true
+    this.turn = 0;
+    this.placing = true;
 
     this.time = 0
     this.memoTime = 0

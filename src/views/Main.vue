@@ -157,7 +157,7 @@ export default class App extends Vue {
   get mainButtonText() {
     return state.inSolvingPhase || state.started && !state.scrambled
       ? "Done"
-      : "Play"
+      : "Play game"
   }
 
   formatDate(time: number) {

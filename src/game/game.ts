@@ -399,6 +399,7 @@ export class Game {
         this.isMoving = false;
         return;
       }
+
       this.isMoving = false;
 
       event.preventDefault();
