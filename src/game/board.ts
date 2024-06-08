@@ -70,19 +70,19 @@ export class Board {
     //go through the tiles 
     //see if there are any straight lines up or down
     let board = [] as number[][];
-    let currentTileRow = 0;
-    for(let i = 0; i < this.gridTiles.length; i++){
-      const rows = new Array(this.tileSize).fill([]);
-      for(let j = 0; j < this.gridTiles[i].length; j++){
+    
+    for(let i = 0; i < this.gridTiles.length; i++){//rows
+      const row = new Array(this.tileSize).fill([]) as number[][];
+      for(let j = 0; j < this.gridTiles[i].length; j++){//cols
+        
         for(let k = 0; k < this.tileSize; k++){//tile row
-          for(let l = 0; l < this.tileSize; l++){//tile col
-            rows[k + currentTileRow].push(this.gridTiles[i][j].slots[k][l]);
-          }
+          row[k] = [...row[k], ...this.gridTiles[i][j].slots[k]];
         }
-        currentTileRow+=this.tileSize;
       }
-      board = [...board, ...rows];
+      board = [...board, ...row];
     }
+
+    console.log("board", ...board);
     
     for(let i = 0; i < board.length; i++){
       const row = [];
@@ -98,6 +98,7 @@ export class Board {
           isWonHorizontal = isWonHorizontal && i < board.length && board[i][nextColIndex] === currentNumber;
         }
         if(isWonHorizontal){
+          console.log('won horizontal', currentNumber);
           return currentNumber;
         }
         let isWonVertical = true;
@@ -106,6 +107,7 @@ export class Board {
           isWonVertical = isWonVertical && nextRowIndex < board.length && board[nextRowIndex][j] === currentNumber;
         }
         if(isWonVertical){
+          console.log('won vertical', currentNumber);
           return currentNumber;
         }
         let isWonLeftToRightDiagonal = true;
@@ -114,11 +116,19 @@ export class Board {
           const nextColumnIndex = j + k;
           isWonLeftToRightDiagonal = isWonLeftToRightDiagonal && nextRowIndex < board.length && board[nextRowIndex][nextColumnIndex] === currentNumber;
         }
+        if(isWonLeftToRightDiagonal){
+          console.log('won left to right diagonal', currentNumber);
+          return currentNumber;
+        }
         let isWonRightToLeftDiagonal = true;
         for(let k = 0; k < numberToConnect; k++){
           const nextRowIndex = i - k;
           const nextColumnIndex = j - k;
           isWonRightToLeftDiagonal = isWonRightToLeftDiagonal && nextRowIndex >= 0 && board[nextRowIndex][nextColumnIndex] === currentNumber;
+        }
+        if(isWonRightToLeftDiagonal){
+          console.log('won right to left diagonal', currentNumber);
+          return currentNumber;
         }
       }
     }

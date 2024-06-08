@@ -445,7 +445,9 @@ export class Game {
       slots[slotY][slotX] = slots[slotY][slotX] === 1 ? 2 : 1;
       console.log('row', col, 'col', row);
       this.repaint = true;
-
+      if(this.board.isGameWon()){
+        alert('You won!');
+      }
     });
 
     this.canvas.addEventListener(
