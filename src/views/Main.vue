@@ -155,7 +155,7 @@ export default class App extends Vue {
   }
 
   get mainButtonText() {
-    return state.inSolvingPhase || state.started && !state.scrambled
+    return state.inSolvingPhase || state.started
       ? "Done"
       : "Play game"
   }
