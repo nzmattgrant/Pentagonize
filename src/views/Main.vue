@@ -50,6 +50,9 @@
           <div v-if="$state.started">
             {{ "Player" + ($state.turn === 0 ? " 1 turn" : " 2 turn") }}
           </div>
+          <div v-if="$state.started">
+            {{ ($state.placing ? "Placing piece" : "Turning tile") }}
+          </div>
 
           <SolveList :solves="$state.solves" :limit="sidebarLimit" :fmc="fmc" />
         </aside>

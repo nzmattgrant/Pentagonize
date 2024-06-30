@@ -258,6 +258,9 @@ export class Game {
   };
 
   private onTouchMove = (identifier: number, x: number, y: number) => {
+    if(!window.state.started || window.state.placing){
+      return;
+    }
     const pointer = this.pointers.get(identifier);
     if (!pointer) return;
 
@@ -294,6 +297,7 @@ export class Game {
     pointer.x = x;
     pointer.y = y;
 
+    window.state.placing = true;
     this.highlightActive = false;
     this.repaint = true;
   };
@@ -389,7 +393,7 @@ export class Game {
 
     addEventListener('mouseup', (event) => {
       this.pointers.delete(-1);
-      if(this.isMoving){
+      if(!window.state.started || this.isMoving){
         this.isMoving = false;
         return;
       }
@@ -406,32 +410,35 @@ export class Game {
       //get the x, y from the canvas
       //split the grid width and height into the number of rows and columns
       //get the row and column from the x, y
-      const x = event.clientX;
-      const y = event.clientY;
-      if(x < rect.left || y < rect.top || x > rect.right || y > rect.bottom){
-        return;
-      }
-      const canvasX = event.clientX - rect.left;
-      const canvasY = event.clientY - rect.top;
-      //if the mouse is not in the canvas bounding rect then return
+      if(window.state.placing){
+        const x = event.clientX;
+        const y = event.clientY;
+        if(x < rect.left || y < rect.top || x > rect.right || y > rect.bottom){
+          return;
+        }
+        const canvasX = event.clientX - rect.left;
+        const canvasY = event.clientY - rect.top;
+        //if the mouse is not in the canvas bounding rect then return
 
-      const col = Math.floor(((canvasX * devicePixelRatio) / this.width) * this.columnCount);
-      const row = Math.floor(((canvasY * devicePixelRatio) / this.height) * this.rowCount);
-      const tile = this.board.gridTiles[row][col];
-      //get the column of the tile
-      //get the row of the tile
-      const tileX = col * this.tileSize;
-      const tileY = row * this.tileSize;
-      
-      const xToCheck = canvasX -  tileX;
-      const yToCheck = canvasY - tileY;
-      
-      //find the slot of the tile that was clicked on
-      const slots = tile.slots;
-      const slotSize = this.tileSize / slots.length;
-      const slotX = Math.floor(xToCheck / slotSize);
-      const slotY = Math.floor(yToCheck / slotSize);
-      slots[slotY][slotX] = slots[slotY][slotX] === 1 ? 2 : 1;
+        const col = Math.floor(((canvasX * devicePixelRatio) / this.width) * this.columnCount);
+        const row = Math.floor(((canvasY * devicePixelRatio) / this.height) * this.rowCount);
+        const tile = this.board.gridTiles[row][col];
+        //get the column of the tile
+        //get the row of the tile
+        const tileX = col * this.tileSize;
+        const tileY = row * this.tileSize;
+        
+        const xToCheck = canvasX -  tileX;
+        const yToCheck = canvasY - tileY;
+        
+        //find the slot of the tile that was clicked on
+        const slots = tile.slots;
+        const slotSize = this.tileSize / slots.length;
+        const slotX = Math.floor(xToCheck / slotSize);
+        const slotY = Math.floor(yToCheck / slotSize);
+        slots[slotY][slotX] = slots[slotY][slotX] === 1 ? 2 : 1;
+        window.state.placing = false;
+      }
       this.repaint = true;
       if(this.board.isGameWon()){
         setTimeout(() => alert('You won!'));
