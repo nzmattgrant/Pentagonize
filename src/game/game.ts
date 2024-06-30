@@ -412,7 +412,6 @@ export class Game {
       //get the x, y from the canvas
       //split the grid width and height into the number of rows and columns
       //get the row and column from the x, y
-      console.log('event', event.clientX, event.clientY);
       const x = event.clientX;
       const y = event.clientY;
       if(x < rect.left || y < rect.top || x > rect.right || y > rect.bottom){
@@ -429,24 +428,19 @@ export class Game {
       //get the row of the tile
       const tileX = col * this.tileSize;
       const tileY = row * this.tileSize;
-      console.log('tileX', tileX, 'tileY', tileY, 'x', canvasX, 'y', canvasY);
       
       const xToCheck = canvasX -  tileX;
       const yToCheck = canvasY - tileY;
-      console.log('xToCheck', xToCheck, 'yToCheck', yToCheck);
       
       //find the slot of the tile that was clicked on
       const slots = tile.slots;
       const slotSize = this.tileSize / slots.length;
-      console.log('slotSize', slotSize);
       const slotX = Math.floor(xToCheck / slotSize);
       const slotY = Math.floor(yToCheck / slotSize);
-      console.log('slotX', slotX, 'slotY', slotY);
       slots[slotY][slotX] = slots[slotY][slotX] === 1 ? 2 : 1;
-      console.log('row', col, 'col', row);
       this.repaint = true;
       if(this.board.isGameWon()){
-        alert('You won!');
+        setTimeout(() => alert('You won!'));
       }
     });
 

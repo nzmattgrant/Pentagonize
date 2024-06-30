@@ -66,7 +66,7 @@ export class Board {
   }
 
   isGameWon(){
-    const numberToConnect = 4;//one less than the total number needed to win
+    const numberToConnect = 5;
     //go through the tiles 
     //see if there are any straight lines up or down
     let board = [] as number[][];
@@ -81,8 +81,6 @@ export class Board {
       }
       board = [...board, ...row];
     }
-
-    console.log("board", ...board);
     
     for(let i = 0; i < board.length; i++){
       const row = [];
