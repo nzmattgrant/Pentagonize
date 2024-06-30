@@ -4,6 +4,7 @@
     :class="{ fmc: fmc, current: current, clickable: $listeners.click }"
     @click="$emit('click', $event)"
   >
+     <div class="turn">{{ fmc ? movesStr : timeStr }}{{ dnf ? " DNF" : "" }}</div>
     <div class="first">{{ fmc ? movesStr : timeStr }}{{ dnf ? " DNF" : "" }}</div>
     <div class="second">{{ fmc ? timeStr : movesStr }} / {{ mps }} mps</div>
   </div>

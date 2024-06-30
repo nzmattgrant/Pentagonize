@@ -47,7 +47,9 @@
             <p v-if="newRecord" class="new-record">{{ newRecord }}</p>
           </transition>
 
-          <Solve class="current-solve" />
+          <div v-if="$state.started">
+            {{ "Player" + ($state.turn === 0 ? " 1 turn" : " 2 turn") }}
+          </div>
 
           <SolveList :solves="$state.solves" :limit="sidebarLimit" :fmc="fmc" />
         </aside>
