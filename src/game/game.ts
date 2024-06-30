@@ -1,5 +1,4 @@
 import { Axis, Board, Move } from '.';
-import { scrambleBoard } from './scramble';
 
 interface Transition {
   value: number;
@@ -149,11 +148,6 @@ export class Game {
       time: 0,
       duration: this.transitionTime,
     });
-  }
-
-  scramble() {
-    scrambleBoard(this.board, this.noRegrips ? this.activeTile : undefined);
-    this.repaint = true;
   }
 
   private render(time: number) {

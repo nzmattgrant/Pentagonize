@@ -67,11 +67,6 @@
 
     <Solutions v-if="fmc" />
 
-    <Statistics />
-
-    <Dialog title="Confirm scramble" :open.sync="confirmScrambleDialog" @confirm="$state.scramble()">
-      <p style="margin: 0;">Do you want to reset the current solve and generate a new scramble?</p>
-    </Dialog>
 
     <EventDialog :open.sync="eventDialog" />
     <SettingsDialog :open.sync="settingsDialog" />
@@ -123,7 +118,6 @@ export default class App extends Vue {
 
   refresh: Function | null = null
 
-  confirmScrambleDialog = false
   eventDialog = false
   settingsDialog = false
 

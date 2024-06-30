@@ -7,15 +7,6 @@
         :disabled="!$state.started || $state.moves.length == 0"
       >Save solution</button>
     </div>
-    <div v-for="[solution, i] of list" :key="i" class="solution" @click="loadSolution(solution)">
-      <span class="number">Solution {{ i + 1 }}</span>
-      <span class="info">{{ solution.moves.length - solution.undos }} moves</span>
-      <button
-        v-if="$state.started"
-        class="btn"
-        @click="($event.stopPropagation(), deleteSolution(i))"
-      >✕</button>
-    </div>
     <p
       v-if="solutions.length == 0"
       class="hint"
@@ -58,18 +49,6 @@ export default class Solutions extends Vue {
       moves: [...this.$state.moveHistory],
       undos: this.$state.undos
     })
-  }
-
-  loadSolution(solution: Solution) {
-    if (!this.$state.scrambledBoard) return
-
-    this.$state.undos = solution.undos
-    this.$state.moveHistory = [...solution.moves]
-    this.$state.game.setBoard(this.$state.scrambledBoard.clone())
-
-    for (const move of solution.moves.slice(0, -solution.undos || undefined)) {
-      this.$state.game.move(move)
-    }
   }
 
   deleteSolution(i: number) {

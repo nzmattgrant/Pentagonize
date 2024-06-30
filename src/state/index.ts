@@ -12,7 +12,6 @@ export enum EventType {
 export interface Solve {
   time: number
   moves: Move[]
-  scramble: Board
   startTime: number
   memoTime?: number
   dnf?: boolean

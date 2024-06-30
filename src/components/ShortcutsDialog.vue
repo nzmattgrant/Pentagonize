@@ -25,9 +25,6 @@
       <li>
         <code>r</code> redo
       </li>
-      <li>
-        <code>Enter</code> scramble / done in blind mode
-      </li>
     </ul>
 
     <p>You can type a number before the arrow key to specify how much to move in a direction.</p>

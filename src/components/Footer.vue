@@ -8,35 +8,17 @@
       <a
         target="_blank"
         rel="noopener"
-        href="https://github.com/janispritzkau"
-      >Janis Pritzkau</a>.
+        href=""
+      >Matt Grant</a>.
     </p>
     <p>
-      Remake of carykh's
+      Remake of Janis Pritzkau's
       <a
         target="_blank"
         rel="noopener"
-        href="https://openprocessing.org/sketch/580366"
+        href="https://github.com/janispritzkau"
       >Loopover</a>.
     </p>
-    <p>
-      <a target="_blank" rel="noopener" href="https://discord.gg/DXASrTp">Discord</a> |
-      <a target="_blank" rel="noopener" href="https://github.com/janispritzkau/loopover">GitHub</a>
-    </p>
-    <div class="auth">
-      <p v-if="$state.user">
-        <img v-if="$state.user.avatarUrl" :src="$state.user.avatarUrl" />
-        Signed in as {{ $state.user.name }}
-      </p>
-      <template v-if="$state.user">
-        <a @click="signOut">Sign out</a>
-      </template>
-      <template v-else>
-        <p>Log in to synchronize your solves.</p>
-        <a @click="signIn('google')">Sign in with Google</a>
-        <a @click="signIn('discord')">Sign in with Discord</a>
-      </template>
-    </div>
 
     <ShortcutsDialog :open.sync="shortcutsDialog" />
   </footer>

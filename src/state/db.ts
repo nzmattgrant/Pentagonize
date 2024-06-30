@@ -8,7 +8,6 @@ export interface SerializedSolve {
   startTime: number
   time: number
   moves: number[][]
-  scramble: number[][]
   memoTime?: number
   dnf?: boolean
 }
@@ -76,7 +75,6 @@ export function serializeSolve(solve: Solve, event: string, session: number): Se
   return {
     event, session, ...solve,
     moves: serializeMoves(solve.moves),
-    scramble: solve.scramble.serialize()
   }
 }
 
@@ -86,7 +84,6 @@ export function deserializeSolve(value: SerializedSolve): { event: string, sessi
     event, session, solve: {
       ...solve,
       moves: deserializeMoves(solve.moves),
-      scramble: Board.deserialize(solve.scramble)
     }
   }
 }

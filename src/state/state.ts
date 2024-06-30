@@ -27,7 +27,6 @@ export class State {
   hideInspectHint = false
 
   started = false
-  scrambled = false
   inSolvingPhase = false
   dnf = false
   turn = 0;
@@ -38,7 +37,6 @@ export class State {
   memoTime = 0
   interval?: any
 
-  scrambledBoard?: Board
   moveHistory: Move[] = []
   undos = 0
   inspecting = false
@@ -129,24 +127,10 @@ export class State {
     if (process.env.VUE_APP_GA_ID) track("event", "game", "start", this.eventName)
   }
 
-  scramble() {
-    this.reset(true)
-    this.game.scramble()
-    this.game.canvas.focus()
-
-    this.scrambled = true
-    this.scrambledBoard = this.game.board.clone()
-
-    if (this.event == EventType.Blind) this.start()
-
-    if (process.env.VUE_APP_GA_ID) track("event", "game", "scramble", this.eventName)
-  }
-
   async reset(onlyResetState = false) {
     clearInterval(this.interval)
 
     this.started = false
-    this.scrambled = false
     this.inSolvingPhase = false
     this.dnf = false
     this.moveHistory = []
@@ -209,7 +193,6 @@ export class State {
     this.time = solve.time
     this.dnf = !!solve.dnf
 
-    this.game.setBoard(solve.scramble.clone())
     this.moveHistory = solve.moves
     this.undos = solve.moves.length
 
@@ -256,10 +239,8 @@ export class State {
   handleMove(move: Move, isPlayerMove: boolean) {
     const time = performance.now()
 
-    if (!this.started && this.scrambled && isPlayerMove) this.start(time)
     if (!this.started) return
 
-    this.scrambled = !this.game.board.isSolved()
     if (!isPlayerMove) return
 
     if (this.undos > 0) {
@@ -277,8 +258,6 @@ export class State {
         this.game.setBlind(true)
         this.memoTime = performance.now() - this.startTime
       }
-    } else if (this.event != EventType.Fmc && !this.scrambled) {
-      this.handleSolved(true)
     }
   }
 
@@ -290,14 +269,12 @@ export class State {
       : performance.now() - this.startTime
 
     this.started = false
-    this.scrambled = false
     this.inSolvingPhase = false
 
     const solve: Solve = {
       startTime: Math.floor(Date.now() - this.time),
       time: Math.floor(this.time),
       moves: [...this.moveHistory],
-      scramble: this.scrambledBoard!
     }
 
     if (this.memoTime > 0) solve.memoTime = Math.floor(this.memoTime)
