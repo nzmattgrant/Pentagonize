@@ -279,6 +279,8 @@ export class Game {
         this.animatedMove({ axis: Axis.Row, index: rowIndex, n: Math.sign(moveX) }, true);
       }
       pointersX.forEach((p) => (p.moveX = 0));
+      window.state.placing = true;
+      window.state.turn = window.state.turn === 0 ? 1 : 0;
     }
     pointer.col = col;
 
@@ -291,13 +293,15 @@ export class Game {
         this.animatedMove({ axis: Axis.Col, index: colIndex, n: Math.sign(moveY) }, true);
       }
       pointersY.forEach((p) => (p.moveY = 0));
+      
+      window.state.placing = true;
+      window.state.turn = window.state.turn === 0 ? 1 : 0;
     }
     pointer.row = row;
 
     pointer.x = x;
     pointer.y = y;
 
-    window.state.placing = true;
     this.highlightActive = false;
     this.repaint = true;
   };
@@ -436,7 +440,7 @@ export class Game {
         const slotSize = this.tileSize / slots.length;
         const slotX = Math.floor(xToCheck / slotSize);
         const slotY = Math.floor(yToCheck / slotSize);
-        slots[slotY][slotX] = slots[slotY][slotX] === 1 ? 2 : 1;
+        slots[slotY][slotX] = window.state.turn + 1;
         window.state.placing = false;
       }
       this.repaint = true;
