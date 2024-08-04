@@ -440,6 +440,9 @@ export class Game {
         const slotSize = this.tileSize / slots.length;
         const slotX = Math.floor(xToCheck / slotSize);
         const slotY = Math.floor(yToCheck / slotSize);
+        if(slots[slotY][slotX] !== 0){
+          return;
+        }
         slots[slotY][slotX] = window.state.turn + 1;
         window.state.placing = false;
       }
