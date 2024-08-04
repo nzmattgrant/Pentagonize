@@ -25,7 +25,7 @@
             </template>
           </div>
 
-          <canvas ref="canvas" />
+          <canvas ref="canvas" :style="{cursor: $state.started && !$state.placing ? 'move' : 'pointer'}" />
 
           <div class="bottom">
             <button class="btn" @click="eventDialog = true">Event: {{ eventName }}</button>
@@ -47,10 +47,10 @@
             <p v-if="newRecord" class="new-record">{{ newRecord }}</p>
           </transition>
 
-          <div v-if="$state.started">
+          <div v-if="$state.started" :style="{ backgroundColor: $state.turn === 0 ? 'red' : 'blue', color: 'white', padding: '10px', marginBottom: '10px' }">
             {{ "Player" + ($state.turn === 0 ? " 1 turn" : " 2 turn") }}
           </div>
-          <div v-if="$state.started">
+          <div v-if="$state.started" style="padding: 10px;">
             {{ ($state.placing ? "Placing piece" : "Turning tile") }}
           </div>
 
