@@ -1,6 +1,8 @@
 import { Axis, Move } from '.';
 import { Tile } from './tile';
 
+type Grid = number[][];
+
 export class Board {
   grid: number[][];
   gridTiles: Tile[][] = [];
@@ -65,11 +67,10 @@ export class Board {
     throw new Error('Index not found in board');
   }
 
-  isGameWon(){
-    const numberToConnect = 5;
-    //go through the tiles 
-    //see if there are any straight lines up or down
-    let board = [] as number[][];
+
+  getGameWinner(){
+  
+    let grid = [] as Grid;
     
     for(let i = 0; i < this.gridTiles.length; i++){//rows
       const row = new Array(this.tileSize).fill([]) as number[][];
@@ -79,57 +80,47 @@ export class Board {
           row[k] = [...row[k], ...this.gridTiles[i][j].slots[k]];
         }
       }
-      board = [...board, ...row];
+      grid = [...grid, ...row];
+    }
+
+    function checkLine(line: number[]): number {
+      if (line.includes(0)) return 0;
+      if (line.every(cell => cell === 1)) return 1;
+      if (line.every(cell => cell === 2)) return 2;
+      return 0;
     }
     
-    for(let i = 0; i < board.length; i++){
-      const row = [];
-      for(let j = 0; j < board[i].length; j++){
-        //vertical
-        const currentNumber = board[i][j];
-        if(currentNumber === 0){
-          break;
-        }
-        let isWonHorizontal = true;
-        for(let k = 0; k < numberToConnect; k++){
-          const nextColIndex = j + k;
-          isWonHorizontal = isWonHorizontal && i < board.length && board[i][nextColIndex] === currentNumber;
-        }
-        if(isWonHorizontal){
-          console.log('won horizontal', currentNumber);
-          return currentNumber;
-        }
-        let isWonVertical = true;
-        for(let k = 0; k < numberToConnect; k++){
-          const nextRowIndex = i + k;
-          isWonVertical = isWonVertical && nextRowIndex < board.length && board[nextRowIndex][j] === currentNumber;
-        }
-        if(isWonVertical){
-          console.log('won vertical', currentNumber);
-          return currentNumber;
-        }
-        let isWonLeftToRightDiagonal = true;
-        for(let k = 0; k < numberToConnect; k++){
-          const nextRowIndex = i + k;
-          const nextColumnIndex = j + k;
-          isWonLeftToRightDiagonal = isWonLeftToRightDiagonal && nextRowIndex < board.length && board[nextRowIndex][nextColumnIndex] === currentNumber;
-        }
-        if(isWonLeftToRightDiagonal){
-          console.log('won left to right diagonal', currentNumber);
-          return currentNumber;
-        }
-        let isWonRightToLeftDiagonal = true;
-        for(let k = 0; k < numberToConnect; k++){
-          const nextRowIndex = i - k;
-          const nextColumnIndex = j - k;
-          isWonRightToLeftDiagonal = isWonRightToLeftDiagonal && nextRowIndex >= 0 && board[nextRowIndex][nextColumnIndex] === currentNumber;
-        }
-        if(isWonRightToLeftDiagonal){
-          console.log('won right to left diagonal', currentNumber);
-          return currentNumber;
-        }
+    const size = grid.length;
+    const winLength = size - 1;
+  
+    const rotatedGrid = grid.map((_, i) => grid.map(row => row[i]));
+    // Check horizontal and vertical
+    for (let i = 0; i < size; i++) {
+      for (let j = 0; j <= size - winLength; j++) {
+        // Horizontal check
+        const horizontalWinner = checkLine(grid[i].slice(j, j + winLength));
+        if (horizontalWinner) return horizontalWinner;
+        
+        // Vertical check
+        const verticalWinner = checkLine(rotatedGrid[i].slice(j, j + winLength));
+        if (verticalWinner) return verticalWinner;
       }
     }
+  
+    // Check diagonals
+    for (let i = 0; i <= size - winLength; i++) {
+      for (let j = 0; j <= size - winLength; j++) {
+        // Diagonal from top-left to bottom-right
+        const diagonalWinner1 = checkLine(Array.from({ length: winLength }, (_, k) => grid[i + k][j + k]));
+        if (diagonalWinner1) return diagonalWinner1;
+        
+        // Diagonal from top-right to bottom-left
+        const diagonalWinner2 = checkLine(Array.from({ length: winLength }, (_, k) => grid[i + k][j + winLength - 1 - k]));
+        if (diagonalWinner2) return diagonalWinner2;
+      }
+    }
+  
+    return 0; // No winner
   }
 
   private moveRow(index: number, n: number) {

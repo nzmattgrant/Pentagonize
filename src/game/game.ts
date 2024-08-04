@@ -444,8 +444,9 @@ export class Game {
         window.state.placing = false;
       }
       this.repaint = true;
-      if(this.board.isGameWon()){
-        setTimeout(() => alert('You won!'));
+      const gameWinner = this.board.getGameWinner();
+      if(gameWinner !== 0){
+        setTimeout(() => alert(`Player ${gameWinner} wins!`), 100);
       }
     });
 
