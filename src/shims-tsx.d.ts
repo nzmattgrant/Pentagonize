@@ -12,6 +12,7 @@ declare global {
 
   interface Window {
     state: State
+    adsbygoogle: unknown[]
   }
 
   function track(type: string, category?: string, action?: string, label?: string): void

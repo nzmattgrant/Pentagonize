@@ -13,6 +13,9 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lexend:400,500&display=swap" rel="stylesheet">
     <title><%= VUE_APP_TITLE %></title>
+    <% if (typeof VUE_APP_ADSENSE_PUB_ID !== 'undefined' && VUE_APP_ADSENSE_PUB_ID) { %>
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<%= VUE_APP_ADSENSE_PUB_ID %>" crossorigin="anonymous"></script>
+    <% } %>
   </head>
   <body>
     <noscript>

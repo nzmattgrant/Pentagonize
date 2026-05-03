@@ -5,7 +5,7 @@
         <h1>Pentagonize</h1>
 
         <main ref="main">
-          <canvas ref="canvas" :style="{cursor: $state.started && !$state.placing ? 'move' : 'pointer'}" />
+          <canvas ref="canvas" />
 
           <div class="bottom">
             <div style="flex-grow: 1;"></div>
@@ -27,6 +27,22 @@
     </div>
 
     <SettingsDialog :open.sync="settingsDialog" />
+
+    <transition name="winner-fade">
+      <div v-if="winner !== 0" class="winner-overlay">
+        <div class="winner-dialog">
+          <div class="winner-marble" :style="{ background: winner === 1 ? 'darkred' : 'darkblue' }">
+            <div class="winner-marble-glint" />
+          </div>
+          <h2 class="winner-title">Player {{ winner }} wins!</h2>
+          <p class="winner-sub">Congratulations!</p>
+          <div class="winner-actions">
+            <button class="btn" @click="winner = 0">Close</button>
+            <button class="btn filled winner-play-again" @click="restartGame">Play Again</button>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -53,6 +69,7 @@ export default class App extends Vue {
   game!: Game
 
   settingsDialog = false
+  winner = 0
 
   desktopMode = false
   sidebarWidth = 240
@@ -67,7 +84,13 @@ export default class App extends Vue {
       state.start()
       return
     }
+    this.winner = 0
     state.reset()
+  }
+
+  restartGame() {
+    this.winner = 0
+    state.reset().then(() => state.start())
   }
 
   updateSize() {
@@ -104,6 +127,7 @@ export default class App extends Vue {
   mounted() {
     const game = new Game(this.$refs.canvas, state.cols, state.rows)
     state.game = this.game = game
+    game.onWin = (w) => { this.winner = w }
 
     this.$watch(() => [state.cols, state.rows], () => {
       state.game.setBoardSize(state.cols, state.rows)
@@ -199,5 +223,88 @@ aside {
   width: 100%;
   height: 48px;
   margin-bottom: 16px;
+}
+
+.winner-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 200;
+  padding: 16px;
+}
+
+.winner-dialog {
+  background: var(--background);
+  border-radius: 6px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.35);
+  padding: 40px 32px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 260px;
+  max-width: 360px;
+  width: 100%;
+}
+
+.winner-marble {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  position: relative;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.winner-marble-glint {
+  position: absolute;
+  top: 18%;
+  left: 20%;
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.winner-title {
+  margin: 0 0 6px;
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.winner-sub {
+  margin: 0 0 28px;
+  opacity: 0.6;
+}
+
+.winner-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.winner-play-again {
+  width: auto;
+  height: auto;
+  margin-bottom: 0;
+  padding: 8px 20px;
+}
+
+.winner-fade-enter-active,
+.winner-fade-leave-active {
+  transition: opacity 200ms;
+}
+
+.winner-fade-enter,
+.winner-fade-leave-to {
+  opacity: 0;
+}
+
+.winner-fade-enter .winner-dialog,
+.winner-fade-leave-to .winner-dialog {
+  transform: scale(0.85);
 }
 </style>
