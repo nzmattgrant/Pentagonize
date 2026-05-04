@@ -22,6 +22,15 @@
           <div v-if="$state.started" style="padding: 10px;">
             {{ ($state.placing ? "Placing piece" : "Turning tile") }}
           </div>
+
+          <div class="how-to-play">
+            <h3>How to Play</h3>
+            <ol>
+              <li><strong>Place</strong> — click an empty slot on the board to place your marble.</li>
+              <li><strong>Slide</strong> — click an arrow on the board edge (or drag a row/column) to shift tiles.</li>
+              <li><strong>Win</strong> — be the first to get 5 marbles in a row, column, or diagonal.</li>
+            </ol>
+          </div>
         </aside>
       </div>
     </div>
@@ -211,6 +220,34 @@ canvas {
 
 aside {
   padding: 0 0 0 16px;
+}
+
+.how-to-play {
+  margin-top: 24px;
+  padding: 14px 16px;
+  background: var(--background);
+  border: 1px solid var(--contrast-2);
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.how-to-play h3 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.55;
+}
+
+.how-to-play ol {
+  margin: 0 0 10px;
+  padding-left: 18px;
+}
+
+.how-to-play li {
+  margin-bottom: 6px;
 }
 
 .bottom {
