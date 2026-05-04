@@ -1,6 +1,7 @@
 <template>
   <div>
     <Main />
+    <AdBanner :slot-id="adSlot" />
     <Footer />
 
     <div v-if="$state.reloadPage" class="update-notification dark">
@@ -22,14 +23,20 @@
 import { Vue, Component } from "vue-property-decorator"
 import Main from "./views/Main.vue"
 import Footer from "./components/Footer.vue"
+import AdBanner from "./components/AdBanner.vue"
 
 @Component({
   components: {
     Main,
-    Footer
+    Footer,
+    AdBanner,
   }
 })
 export default class App extends Vue {
+  get adSlot() {
+    return process.env.VUE_APP_ADSENSE_SLOT || ""
+  }
+
   reload() {
     location.reload()
   }
