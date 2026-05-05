@@ -7,11 +7,34 @@
         <main ref="main">
           <canvas ref="canvas" />
 
-          <div class="bottom">
+          <div v-if="desktopMode" class="bottom">
             <div style="flex-grow: 1;"></div>
             <button class="btn" @click="settingsDialog = true">Settings</button>
           </div>
         </main>
+
+        <div v-if="!desktopMode" class="mobile-controls">
+          <div class="mobile-actions">
+            <button class="btn filled mobile-play-btn" @click="handleMainButtonClick">{{ mainButtonText }}</button>
+            <button class="btn" @click="settingsDialog = true">Settings</button>
+          </div>
+
+          <div v-if="$state.started" class="turn-indicator" :style="{ backgroundColor: $state.turn === 0 ? 'red' : 'blue' }">
+            {{ "Player" + ($state.turn === 0 ? " 1 turn" : " 2 turn") }}
+          </div>
+          <div v-if="$state.started" class="phase-indicator">
+            {{ ($state.placing ? "Placing piece" : "Turning tile") }}
+          </div>
+
+          <div class="how-to-play">
+            <h3>How to Play</h3>
+            <ol>
+              <li><strong>Place</strong> — click an empty slot on the board to place your marble.</li>
+              <li><strong>Slide</strong> — click an arrow on the board edge (or drag a row/column) to shift tiles.</li>
+              <li><strong>Win</strong> — be the first to get 5 marbles in a row, column, or diagonal.</li>
+            </ol>
+          </div>
+        </div>
 
         <aside v-if="desktopMode" :style="{ width: sidebarWidth + 'px' }">
           <button class="btn filled" @click="handleMainButtonClick">{{ mainButtonText }}</button>
@@ -187,9 +210,39 @@ export default class App extends Vue {
 .main-wrapper {
   position: relative;
   display: flex;
+  flex-wrap: wrap;
   margin: 32px 0;
   padding-bottom: 32px;
   padding-top: 96px;
+}
+
+.mobile-controls {
+  width: 100%;
+  padding-top: 16px;
+}
+
+.mobile-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.mobile-play-btn {
+  flex: 1;
+  height: 44px;
+  margin-bottom: 0;
+}
+
+.turn-indicator {
+  color: white;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.phase-indicator {
+  padding: 10px;
+  margin-bottom: 10px;
 }
 
 .main-wrapper.desktopMode {
