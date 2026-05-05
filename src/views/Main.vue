@@ -1,22 +1,23 @@
 <template>
   <div class="app">
     <div class="main-container">
-      <div class="main-wrapper" :class="{ desktopMode }">
+      <header class="app-header">
         <h1>Pentagonize</h1>
+        <button class="settings-btn btn" @click="settingsDialog = true" title="Settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+          </svg>
+        </button>
+      </header>
 
+      <div class="main-wrapper" :class="{ desktopMode }">
         <main ref="main">
           <canvas ref="canvas" />
-
-          <div v-if="desktopMode" class="bottom">
-            <div style="flex-grow: 1;"></div>
-            <button class="btn" @click="settingsDialog = true">Settings</button>
-          </div>
         </main>
 
         <div v-if="!desktopMode" class="mobile-controls">
           <div class="mobile-actions">
             <button class="btn filled mobile-play-btn" @click="handleMainButtonClick">{{ mainButtonText }}</button>
-            <button class="btn" @click="settingsDialog = true">Settings</button>
           </div>
 
           <div v-if="$state.started" class="turn-indicator" :style="{ backgroundColor: $state.turn === 0 ? 'red' : 'blue' }">
@@ -129,11 +130,13 @@ export default class App extends Vue {
     const { columnCount, rowCount } = this.game
     const aspect = columnCount / rowCount
 
+    const headerHeight = 56
+
     const mobileWidth = this.$el.clientWidth - 32
-    const mobileHeight = Math.max(150 + 150 / aspect, innerHeight - 32 * 3 - 96)
+    const mobileHeight = Math.max(150 + 150 / aspect, innerHeight - headerHeight - 32 * 2 - 96)
 
     const desktopWidth = this.$el.clientWidth - this.sidebarWidth - 32
-    const desktopHeight = innerHeight - 32 * 3 - 48
+    const desktopHeight = innerHeight - headerHeight - 32 * 2 - 32
 
     this.desktopMode = !state.forceMobile
       && (Math.min(mobileWidth / aspect, mobileHeight) < Math.min(desktopWidth / aspect, desktopHeight))
@@ -201,24 +204,43 @@ export default class App extends Vue {
   min-height: 60vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
   background: var(--background-darker);
   border-bottom: 1px solid var(--contrast-2);
 }
 
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 56px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--contrast-2);
+}
+
+.settings-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 6px;
+  opacity: 0.6;
+}
+
+.settings-btn:hover {
+  opacity: 1;
+}
+
 .main-wrapper {
-  position: relative;
+  flex: 1;
   display: flex;
   flex-wrap: wrap;
-  margin: 32px 0;
-  padding-bottom: 32px;
-  padding-top: 96px;
+  justify-content: center;
+  padding: 24px 16px 32px;
 }
 
 .mobile-controls {
   width: 100%;
-  padding-top: 16px;
+  padding-top: 8px;
 }
 
 .mobile-actions {
@@ -245,15 +267,9 @@ export default class App extends Vue {
   margin-bottom: 10px;
 }
 
-.main-wrapper.desktopMode {
-  padding-top: 48px;
-}
-
 h1 {
-  position: absolute;
-  top: 0;
   font-weight: 900;
-  font-size: 30px;
+  font-size: 22px;
   line-height: 1;
   margin: 0;
 }
@@ -301,12 +317,6 @@ aside {
 
 .how-to-play li {
   margin-bottom: 6px;
-}
-
-.bottom {
-  height: 0;
-  transform: translateY(8px);
-  display: flex;
 }
 
 .btn.filled {
