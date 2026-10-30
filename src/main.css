@@ -8,7 +8,8 @@ body {
   color: var(--contrast);
   background: var(--background);
   overflow-y: scroll;
-  font-family: "Roboto", sans-serif;
+  font-family: "Inter", "Roboto", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
   touch-action: manipulation;
 }
 
@@ -27,6 +28,13 @@ h3 {
   margin: 0 0 16px;
 }
 
+.card {
+  background: var(--surface);
+  border: 1px solid var(--contrast-2);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
 .btn {
   border: none;
   background: none;
@@ -37,30 +45,48 @@ h3 {
   user-select: none;
   cursor: pointer;
   margin: 0;
-  outline: 0 !important;
-  height: 36px;
-  padding: 0 8px;
-  font-size: 14px;
-  font-weight: 500;
-  text-transform: uppercase;
-  border-radius: 3px;
-  transition: background 100ms;
+  outline: 0;
+  height: 40px;
+  padding: 0 14px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: background 120ms, box-shadow 120ms, filter 120ms;
 }
 
-.btn.filled {
+.btn:hover, .btn:focus-visible {
   background: var(--contrast-3);
+}
+
+.btn:active {
+  background: var(--contrast-2);
+}
+
+.btn:focus-visible {
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.btn.primary {
+  color: #ffffff;
+  background: var(--primary);
+  box-shadow: 0 2px 8px var(--primary-shadow);
+}
+
+.btn.primary:hover, .btn.primary:focus-visible {
+  filter: brightness(1.08);
+}
+
+.btn.primary:active {
+  filter: brightness(0.94);
+}
+
+.btn.outline {
+  box-shadow: inset 0 0 0 1px var(--contrast-1);
 }
 
 .btn.secondary {
   color: var(--secondary);
-}
-
-.btn:hover, .btn:focus {
-  background: var(--contrast-2);
-}
-
-.btn:active {
-  background: var(--contrast-1);
 }
 
 .label {
@@ -69,7 +95,7 @@ h3 {
 
 .label, .checkbox {
   display: block;
-  margin: 8px 0;
+  margin: 12px 0;
   user-select: none;
   position: relative;
 }
@@ -101,7 +127,7 @@ h3 {
 }
 
 .checkbox input:focus, .checkbox input:active {
-  opacity: 0.3;
+  opacity: 0.2;
 }
 
 .checkbox > span::before {
@@ -109,7 +135,7 @@ h3 {
   display: inline-block;
   margin: 0 12px 0 0;
   border: 2px solid var(--contrast-0);
-  border-radius: 2px;
+  border-radius: 5px;
   width: 18px;
   height: 18px;
   vertical-align: top;
@@ -135,7 +161,7 @@ h3 {
 }
 
 .checkbox > input:checked + span::after {
-  border-color: var(--background);
+  border-color: #ffffff;
 }
 
 .checkbox > input:active + span::before {
@@ -147,21 +173,43 @@ h3 {
   background-color: var(--contrast-0);
 }
 
+/* --player-N-*, --tile-* and --hole-* colours are set by exposeColors in src/game/draw.ts */
+.player-1 {
+  --light: var(--player-1-light);
+  --base: var(--player-1-base);
+  --dark: var(--player-1-dark);
+}
+
+.player-2 {
+  --light: var(--player-2-light);
+  --base: var(--player-2-base);
+  --dark: var(--player-2-dark);
+}
+
+.marble {
+  display: inline-block;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 34%, rgba(255, 255, 255, 0.16), transparent 38%),
+    radial-gradient(circle at 34% 34%, var(--light), var(--base) 50%, var(--dark) 75%);
+}
+
 .update-notification {
   position: fixed;
   bottom: 16px;
   left: 16px;
   min-width: 288px;
   max-width: calc(100vw - 32px);
-  background: var(--background-darker);
-  color: #ffffff;
+  background: var(--surface);
+  color: var(--contrast);
   font-size: 14px;
   display: flex;
   align-items: center;
   min-height: 48px;
   padding: 4px 8px 4px 16px;
-  border-radius: 3px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  box-shadow: var(--shadow-raised);
 }
 
 .update-notification span {
@@ -169,23 +217,31 @@ h3 {
 }
 
 :root {
-  --background: #faf8f6;
-  --background-darker: #f2f0ee;
-  --primary: #209aba;
+  --background: #f4f2ef;
+  --surface: #ffffff;
+  --primary: #d63a31;
+  --primary-shadow: rgba(214, 58, 49, 0.3);
   --secondary: #fc4058;
-  --contrast: rgba(0, 0, 0, 0.75);
-  --contrast-0: rgba(0, 0, 0, 0.4);
-  --contrast-1: rgba(0, 0, 0, 0.16);
-  --contrast-2: rgba(0, 0, 0, 0.1);
-  --contrast-3: rgba(0, 0, 0, 0.07);
+  --focus-ring: rgba(214, 58, 49, 0.35);
+  --contrast: rgba(0, 0, 0, 0.82);
+  --contrast-0: rgba(0, 0, 0, 0.45);
+  --contrast-1: rgba(0, 0, 0, 0.14);
+  --contrast-2: rgba(0, 0, 0, 0.08);
+  --contrast-3: rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.05);
+  --shadow-raised: 0 24px 64px rgba(0, 0, 0, 0.28);
+  --radius: 14px;
 }
 
 .dark {
-  --background: #303239;
-  --background-darker: #262930;
+  --background: #1b1d22;
+  --surface: #25282f;
+  --primary-shadow: rgba(0, 0, 0, 0.3);
   --contrast: rgba(252, 253, 255, 0.9);
-  --contrast-0: rgba(251, 252, 255, 0.35);
+  --contrast-0: rgba(251, 252, 255, 0.4);
   --contrast-1: rgba(248, 250, 255, 0.16);
-  --contrast-2: rgba(247, 250, 255, 0.1);
-  --contrast-3: rgba(242, 245, 255, 0.06);
+  --contrast-2: rgba(247, 250, 255, 0.08);
+  --contrast-3: rgba(242, 245, 255, 0.05);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2);
+  --shadow-raised: 0 24px 64px rgba(0, 0, 0, 0.5);
 }

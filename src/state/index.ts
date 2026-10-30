@@ -27,7 +27,7 @@ Vue.nextTick(() => {
   vue.$watch(() => state.darkMode, (dark: boolean) => {
     document.body.classList.toggle("dark", dark)
     const meta = document.head.querySelector<HTMLMetaElement>("meta[name=theme-color]")!
-    meta.content = getComputedStyle(document.body).getPropertyValue(`--background${dark ? "-darker" : ""}`)
+    meta.content = getComputedStyle(document.body).getPropertyValue("--background")
   }, { immediate: true })
 })
 

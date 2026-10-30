@@ -6,17 +6,19 @@ interface Shades {
   dark: string;
 }
 
-// Keyed by slot value. Keep in sync with .winner-marble in Main.vue.
+// Keyed by slot value.
 const MARBLE_COLORS: Record<number, Shades> = {
-  1: { light: '#d0544c', base: '#a31b1b', dark: '#5e0c0d' },
-  2: { light: '#5a6dd8', base: '#2333a0', dark: '#121b68' },
+  1: { light: '#e0645b', base: '#b3231e', dark: '#5e0c0d' },
+  2: { light: '#6b84ee', base: '#2c43c2', dark: '#121c6e' },
 };
 
-const TILE_BEVEL_COLORS = ['#ff7b74', '#b3140f'];
-const TILE_FACE_COLORS = ['#ff4540', '#ec2c28'];
-const BOARD_BASE_COLORS = ['#7a1210', '#560808'];
-const HOLE_COLORS = ['#080808', '#1a1a1a', '#484848'];
+const TILE_BEVEL_COLORS = ['#ff8a80', '#a91c15'];
+const TILE_FACE_COLORS = ['#ee4c41', '#dc3b31'];
+const BOARD_BASE_COLORS = ['#82211b', '#55100c'];
+const HOLE_COLORS = ['#1c0b09', '#2c1311', '#5e2a25'];
 const HOLE_RIM_COLORS = ['rgba(0,0,0,0.35)', 'rgba(255,255,255,0.3)'];
+const ARROW_ICON_COLOR = '#ffffff';
+const ARROW_SHADOW_COLOR = 'rgba(0,0,0,0.3)';
 
 // Marble proportions are fractions of its radius.
 const MARBLE_LIGHT_OFFSET = -0.32;
@@ -35,11 +37,36 @@ const HOLE_RIM_WIDTH = 0.1;
 const TILE_CORNER_RATIO = 0.08;
 const TILE_BEVEL_RATIO = 0.035;
 
-// CSS pixels
-const BOARD_SHADOW_OFFSET = 9;
-const BOARD_SHADOW_BLUR = 14;
-const BOARD_SHADOW_COLOR = 'rgba(0,0,0,0.55)';
-const BOARD_SHADOW_FILL = 'rgba(0,0,0,0.65)';
+// Fractions of the board margin, so the shadow always fits inside the canvas.
+const BOARD_SHADOW_OFFSET = 0.2;
+const BOARD_SHADOW_BLUR = 0.6;
+const BOARD_SHADOW_COLOR = 'rgba(60,10,8,0.4)';
+
+// Arrow icon proportions are fractions of the button radius.
+const ARROW_TIP = 0.42;
+const ARROW_BACK = 0.24;
+const ARROW_HALF_WIDTH = 0.36;
+const ARROW_CORNER = 0.14;
+const ARROW_SHADOW_BLUR = 0.5;
+const ARROW_SHADOW_OFFSET = 0.12;
+
+// Lets CSS draw marbles and tiles that match the canvas.
+export function exposeColors(root: HTMLElement) {
+  const colors: Record<string, string> = {
+    '--tile-light': TILE_FACE_COLORS[0],
+    '--tile-dark': TILE_FACE_COLORS[1],
+    '--hole-dark': HOLE_COLORS[0],
+    '--hole-light': HOLE_COLORS[HOLE_COLORS.length - 1],
+  };
+  for (const [player, shades] of Object.entries(MARBLE_COLORS)) {
+    for (const [shade, color] of Object.entries(shades)) {
+      colors[`--player-${player}-${shade}`] = color;
+    }
+  }
+  for (const [name, color] of Object.entries(colors)) {
+    root.style.setProperty(name, color);
+  }
+}
 
 export function tileCornerRadius(size: number) {
   return size * TILE_CORNER_RATIO;
@@ -68,19 +95,40 @@ function fillCircle(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: nu
   ctx.fill();
 }
 
-export function drawBoardBase(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
-  const offset = Math.round(BOARD_SHADOW_OFFSET * devicePixelRatio);
+export function drawBoardBase(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number, margin: number) {
   ctx.save();
   ctx.shadowColor = BOARD_SHADOW_COLOR;
-  ctx.shadowBlur = BOARD_SHADOW_BLUR * devicePixelRatio;
-  ctx.fillStyle = BOARD_SHADOW_FILL;
-  roundedRectPath(ctx, x + offset, y + offset, w, h, r);
-  ctx.fill();
-  ctx.restore();
-
+  ctx.shadowBlur = margin * BOARD_SHADOW_BLUR;
+  ctx.shadowOffsetY = margin * BOARD_SHADOW_OFFSET;
   ctx.fillStyle = diagonalGradient(ctx, x, y, w, h, BOARD_BASE_COLORS);
   roundedRectPath(ctx, x, y, w, h, r);
   ctx.fill();
+  ctx.restore();
+}
+
+// A round button in the player's colour with a triangle pointing along (dx, dy), a unit vector.
+export function drawArrowButton(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number, dx: number, dy: number, player: number) {
+  const { light, base } = MARBLE_COLORS[player];
+
+  ctx.save();
+  ctx.shadowColor = ARROW_SHADOW_COLOR;
+  ctx.shadowBlur = r * ARROW_SHADOW_BLUR;
+  ctx.shadowOffsetY = r * ARROW_SHADOW_OFFSET;
+  fillCircle(ctx, cx, cy, r, diagonalGradient(ctx, cx - r, cy - r, 2 * r, 2 * r, [light, base]));
+  ctx.restore();
+
+  const px = -dy;
+  const py = dx;
+  ctx.beginPath();
+  ctx.moveTo(cx + dx * r * ARROW_TIP, cy + dy * r * ARROW_TIP);
+  ctx.lineTo(cx - dx * r * ARROW_BACK + px * r * ARROW_HALF_WIDTH, cy - dy * r * ARROW_BACK + py * r * ARROW_HALF_WIDTH);
+  ctx.lineTo(cx - dx * r * ARROW_BACK - px * r * ARROW_HALF_WIDTH, cy - dy * r * ARROW_BACK - py * r * ARROW_HALF_WIDTH);
+  ctx.closePath();
+  ctx.fillStyle = ctx.strokeStyle = ARROW_ICON_COLOR;
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = r * ARROW_CORNER;
+  ctx.fill();
+  ctx.stroke();
 }
 
 // A raised tile: the outer ring is the bevel, lit on the top-left and shaded on the bottom-right.

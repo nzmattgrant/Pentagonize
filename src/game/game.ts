@@ -1,5 +1,8 @@
 import { Axis, Board, Move } from '.';
-import { drawBoardBase, drawMarble, drawSlot, drawTile, MARBLE_IN_HOLE_SCALE, roundedRectPath, tileCornerRadius } from './draw';
+import { drawArrowButton, drawBoardBase, drawMarble, drawSlot, drawTile, MARBLE_IN_HOLE_SCALE, roundedRectPath, tileCornerRadius } from './draw';
+
+// Fraction of the board margin
+const ARROW_BUTTON_RADIUS = 0.34;
 
 interface Transition {
   value: number;
@@ -168,50 +171,25 @@ export class Game {
     return `url('${c.toDataURL()}') ${center} ${center}, crosshair`;
   }
 
-  // Arrow indicators in all four margins during the turn/rotation phase.
+  // Arrow buttons in all four margins during the turn/rotation phase, pointing outward.
   private drawTurnArrows() {
-    const ctx = this.ctx;
-    const as = this.bm * 0.46;   // arrow size — larger for visibility
+    const r = this.bm * ARROW_BUTTON_RADIUS;
     const half = this.bm / 2;
     const rowH = this.bh / this.rowCount;
     const colW = this.bw / this.columnCount;
+    const player = window.state.turn + 1;
 
-    ctx.save();
-    ctx.fillStyle = 'rgba(15,15,15,0.88)';
-    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-    ctx.lineWidth = devicePixelRatio * 1.2;
-
-    const tri = (tip: [number, number], b1: [number, number], b2: [number, number]) => {
-      ctx.beginPath();
-      ctx.moveTo(tip[0], tip[1]);
-      ctx.lineTo(b1[0], b1[1]);
-      ctx.lineTo(b2[0], b2[1]);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-    };
-
-    // Left margin: ← per row  |  Right margin: → per row  (arrows point outward)
     for (let row = 0; row < this.rowCount; row++) {
       const my = this.by + (row + 0.5) * rowH;
-      // ← tip points left (outward)
-      tri([half - as, my], [half + as * 0.1, my - as * 0.55], [half + as * 0.1, my + as * 0.55]);
-      // → tip points right (outward)
-      const rx = this.width - half;
-      tri([rx + as, my], [rx - as * 0.1, my - as * 0.55], [rx - as * 0.1, my + as * 0.55]);
+      drawArrowButton(this.ctx, half, my, r, -1, 0, player);
+      drawArrowButton(this.ctx, this.width - half, my, r, 1, 0, player);
     }
 
-    // Top margin: ↑ per col  |  Bottom margin: ↓ per col  (arrows point outward)
     for (let col = 0; col < this.columnCount; col++) {
       const mx = this.bx + (col + 0.5) * colW;
-      // ↑ tip points up (outward)
-      tri([mx, half - as], [mx - as * 0.55, half + as * 0.1], [mx + as * 0.55, half + as * 0.1]);
-      // ↓ tip points down (outward)
-      const by2 = this.height - half;
-      tri([mx, by2 + as], [mx - as * 0.55, by2 - as * 0.1], [mx + as * 0.55, by2 - as * 0.1]);
+      drawArrowButton(this.ctx, mx, half, r, 0, -1, player);
+      drawArrowButton(this.ctx, mx, this.height - half, r, 0, 1, player);
     }
-
-    ctx.restore();
   }
 
   // Slot highlight on hover. For touch, also draws a marble at the finger position.
@@ -316,7 +294,7 @@ export class Game {
     const gap = Math.max(3, Math.round(devicePixelRatio * 2));
     const boardRadius = gap + tileCornerRadius(this.tileSize - gap * 2);
 
-    drawBoardBase(this.ctx, this.bx, this.by, this.bw, this.bh, boardRadius);
+    drawBoardBase(this.ctx, this.bx, this.by, this.bw, this.bh, boardRadius, this.bm);
 
     // Clip all tile drawing to the board perimeter so sliding tiles never bleed into the margin
     this.ctx.save();

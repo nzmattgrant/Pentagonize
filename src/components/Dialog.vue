@@ -16,10 +16,10 @@
         <div class="actions">
           <template v-if="$listeners.confirm">
             <button class="btn" @click="close">Cancel</button>
-            <button class="btn" @click="$emit('confirm'), close()">Confirm</button>
+            <button class="btn primary" @click="$emit('confirm'), close()">Confirm</button>
           </template>
           <template v-else>
-            <button class="btn" @click="close">Close</button>
+            <button class="btn outline" @click="close">Close</button>
           </template>
         </div>
       </div>
@@ -91,14 +91,14 @@ export default Vue.extend({
 .dialog {
   display: flex;
   flex-direction: column;
-  background: var(--background);
+  background: var(--surface);
   min-width: 240px;
-  max-width: 440px;
+  max-width: 400px;
   width: 100%;
   max-height: 100%;
-  border-radius: 3px;
+  border-radius: 20px;
   outline: 0;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-raised);
   transition: transform 150ms ease-out;
 }
 
@@ -109,7 +109,10 @@ export default Vue.extend({
 }
 
 .title {
-  margin: 24px 0 16px;
+  margin: 24px 0 12px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .content {
@@ -120,6 +123,5 @@ export default Vue.extend({
 .actions {
   display: flex;
   justify-content: flex-end;
-  margin: 12px 0;
-}
-</style>
+  margin: 16px 0 20px;
+}</style>

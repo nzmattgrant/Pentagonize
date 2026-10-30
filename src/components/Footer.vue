@@ -17,12 +17,14 @@ export default class Footer extends Vue {}
 <style scoped>
 footer {
   max-width: 480px;
-  margin: 32px auto;
+  margin: 8px auto 32px;
   padding: 0 16px;
   box-sizing: content-box;
 }
 
 p {
   text-align: center;
+  font-size: 13px;
+  color: var(--contrast-0);
 }
 </style>

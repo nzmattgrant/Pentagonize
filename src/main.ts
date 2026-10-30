@@ -1,12 +1,15 @@
 import Vue from "vue"
 import { register } from "register-service-worker"
 import { state } from "./state"
+import { exposeColors } from "./game/draw"
 
 import "normalize.css"
 import "./main.css"
 import App from "./App.vue"
 
 Vue.config.productionTip = false
+
+exposeColors(document.documentElement)
 
 Vue.prototype.$state = state
 window.state = state
