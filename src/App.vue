@@ -36,9 +36,5 @@ export default class App extends Vue {
   get adSlot() {
     return process.env.VUE_APP_ADSENSE_SLOT || ""
   }
-
-  reload() {
-    location.reload()
-  }
 }
 </script>

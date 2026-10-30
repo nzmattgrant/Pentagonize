@@ -27,8 +27,6 @@ import { Vue, Component, Prop } from "vue-property-decorator"
 export default class Slider extends Vue {
   $el!: HTMLDivElement
 
-  active = false
-
   @Prop({ type: Number, default: 0 }) value!: number
   @Prop({ type: Number, default: 0 }) min!: number
   @Prop({ type: Number, default: 1 }) max!: number
@@ -58,7 +56,6 @@ export default class Slider extends Vue {
   handleTouchStart(event: TouchEvent | MouseEvent) {
     if (event.cancelable) event.preventDefault()
 
-    this.active = true
     this.$el.focus()
     const clientX = event.type == "touchstart" ? (event as TouchEvent).touches[0].clientX : (event as MouseEvent).clientX
     this.setValue((clientX - this.$el.offsetLeft) / this.$el.offsetWidth * (this.max - this.min) + this.min)
@@ -75,8 +72,6 @@ export default class Slider extends Vue {
   }
 
   handleTouchEnd() {
-    this.active = false
-
     removeEventListener("mousemove", this.handleTouchMove)
     removeEventListener("mouseup", this.handleTouchEnd)
     removeEventListener("touchmove", this.handleTouchMove)

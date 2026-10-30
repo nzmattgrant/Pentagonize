@@ -22,13 +22,10 @@ export class State {
     this.placing = true
   }
 
-  async reset(onlyResetState = false) {
+  reset() {
     this.started = false
     this.placing = true
     this.turn = 0
-
-    if (onlyResetState) return
-
     this.game.setBoardSize(this.cols, this.rows)
   }
 }

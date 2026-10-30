@@ -64,9 +64,7 @@
     <transition name="winner-fade">
       <div v-if="winner !== 0" class="winner-overlay">
         <div class="winner-dialog">
-          <div class="winner-marble" :style="{ background: winner === 1 ? 'darkred' : 'darkblue' }">
-            <div class="winner-marble-glint" />
-          </div>
+          <div class="winner-marble" :class="`player-${winner}`" />
           <h2 class="winner-title">Player {{ winner }} wins!</h2>
           <p class="winner-sub">Congratulations!</p>
           <div class="winner-actions">
@@ -83,13 +81,11 @@
 import { Component, Vue } from "vue-property-decorator"
 import { Game } from "../game"
 
-import Dialog from "../components/Dialog.vue"
 import SettingsDialog from "../components/SettingsDialog.vue"
 import { state } from "../state"
 
 @Component({
   components: {
-    Dialog,
     SettingsDialog,
   }
 })
@@ -123,7 +119,8 @@ export default class App extends Vue {
 
   restartGame() {
     this.winner = 0
-    state.reset().then(() => state.start())
+    state.reset()
+    state.start()
   }
 
   updateSize() {
@@ -140,7 +137,6 @@ export default class App extends Vue {
 
     this.desktopMode = !state.forceMobile
       && (Math.min(mobileWidth / aspect, mobileHeight) < Math.min(desktopWidth / aspect, desktopHeight))
-      && rowCount > 1
       && desktopHeight > 320
 
     const width = this.desktopMode ? desktopWidth : mobileWidth
@@ -164,11 +160,6 @@ export default class App extends Vue {
     state.game = this.game = game
     game.onWin = (w) => { this.winner = w }
 
-    this.$watch(() => [state.cols, state.rows], () => {
-      state.game.setBoardSize(state.cols, state.rows)
-      state.reset()
-    }, { immediate: true })
-
     this.$watch(() => [state.transitionTime, state.animations], () => {
       state.game.transitionTime = state.animations ? state.transitionTime : 0
     }, { immediate: true })
@@ -181,7 +172,7 @@ export default class App extends Vue {
     })
 
     this.$refs.canvas.style.transition = "null"
-    this.$watch(() => [state.cols, state.rows, state.forceMobile], this.updateSize, { immediate: true })
+    this.$watch(() => state.forceMobile, this.updateSize, { immediate: true })
     document.body.clientWidth
     this.$refs.canvas.style.transition = ""
 
@@ -353,19 +344,21 @@ aside {
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  position: relative;
   margin-bottom: 24px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
-.winner-marble-glint {
-  position: absolute;
-  top: 18%;
-  left: 20%;
-  width: 30%;
-  height: 30%;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.32);
+/* Keep in sync with MARBLE_COLORS in src/game/draw.ts */
+.winner-marble.player-1 {
+  background:
+    radial-gradient(circle at 34% 34%, rgba(255, 255, 255, 0.16), transparent 38%),
+    radial-gradient(circle at 34% 34%, #d0544c, #a31b1b 50%, #5e0c0d 75%);
+}
+
+.winner-marble.player-2 {
+  background:
+    radial-gradient(circle at 34% 34%, rgba(255, 255, 255, 0.16), transparent 38%),
+    radial-gradient(circle at 34% 34%, #5a6dd8, #2333a0 50%, #121b68 75%);
 }
 
 .winner-title {

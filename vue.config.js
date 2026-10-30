@@ -10,23 +10,5 @@ module.exports = {
     }
   },
 
-  configureWebpack: {
-    externals: {
-      moment: "moment"
-    }
-  },
-
-  chainWebpack(config) {
-    config.plugin("html").tap(args => {
-      const minifyOptions = args[0].minify
-      if (minifyOptions instanceof Object) {
-        minifyOptions.minifyJS = true
-      }
-      return args
-    })
-  },
-
-  transpileDependencies: ["idb"],
-
   productionSourceMap: false
 }

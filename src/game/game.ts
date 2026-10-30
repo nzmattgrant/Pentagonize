@@ -1,4 +1,5 @@
 import { Axis, Board, Move } from '.';
+import { drawBoardBase, drawMarble, drawSlot, drawTile, MARBLE_IN_HOLE_SCALE, roundedRectPath, tileCornerRadius } from './draw';
 
 interface Transition {
   value: number;
@@ -9,8 +10,6 @@ interface Transition {
 }
 
 interface Pointer {
-  x: number;
-  y: number;
   col: number;
   row: number;
   moveX: number;
@@ -32,8 +31,6 @@ export class Game {
 
   private ctx: CanvasRenderingContext2D;
 
-  locked = false;
-
   transitionTime = 150;
   pointers: Map<number, Pointer> = new Map();
   transitions: Map<number, Transition> = new Map();
@@ -50,7 +47,6 @@ export class Game {
   private lastTransitionsSize = 0;
   private transitionsEndedAt = 0;
 
-  onMove?: (move: Move, isPlayerMove: boolean) => void;
   onWin?: (winner: number) => void;
 
   private winnerNotified = false;
@@ -63,8 +59,7 @@ export class Game {
     requestAnimationFrame(this.frame);
   }
 
-  setBoardSize(cols: number, rows?: number) {
-    if (!rows) rows = cols;
+  setBoardSize(cols: number, rows: number) {
     this.board = new Board(cols, rows);
     (this.rowCount = rows), (this.columnCount = cols);
     this.winnerNotified = false;
@@ -106,27 +101,14 @@ export class Game {
 
     this.tileSize = Math.ceil(this.bw / this.columnCount + 0.1);
 
-    this.ctx.textBaseline = 'middle';
-    this.ctx.textAlign = 'center';
-
     this.repaint = true;
   }
 
-  setBoard(board: Board) {
-    this.board = board;
-    this.repaint = true;
-  }
-
-  move(move: Move, isPlayerMove = false) {
+  animatedMove(move: Move) {
+    this.isMoving = true;
     this.board.move(move);
     this.repaint = true;
-    if (this.onMove) this.onMove(move, isPlayerMove);
-    return true;
-  }
-
-  animatedMove(move: Move, isPlayerMove = false) {
-    this.isMoving = true;
-    if (!this.move(move, isPlayerMove) || this.transitionTime == 0) return;
+    if (this.transitionTime == 0) return;
     if (move.axis != this.moveAxis) {
       this.transitions.clear();
       this.moveAxis = move.axis;
@@ -175,23 +157,15 @@ export class Game {
 
   // Generates a data-URL cursor shaped like the current player's marble.
   private generateMarbleCursor(): string {
-    const size = 36;
+    const size = 40;
     const c = document.createElement('canvas');
     c.width = size;
     c.height = size;
-    const ctx = c.getContext('2d')!;
-    const cx = size / 2;
-    const cy = size / 2;
-    const r = size * 0.42;
-    ctx.fillStyle = window.state.turn === 0 ? 'darkred' : 'darkblue';
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,0.30)';
-    ctx.beginPath();
-    ctx.arc(cx - r * 0.28, cy - r * 0.28, r * 0.42, 0, 2 * Math.PI);
-    ctx.fill();
-    return `url('${c.toDataURL()}') ${cx} ${cy}, crosshair`;
+    const center = size / 2;
+    // Small enough that the marble's shadow fits inside the cursor image
+    const r = size * 0.36;
+    drawMarble(c.getContext('2d')!, center, center, r, window.state.turn + 1);
+    return `url('${c.toDataURL()}') ${center} ${center}, crosshair`;
   }
 
   // Arrow indicators in all four margins during the turn/rotation phase.
@@ -248,7 +222,7 @@ export class Game {
     const physX = this.cursorX * devicePixelRatio;
     const physY = this.cursorY * devicePixelRatio;
     const r = this.tileSize / 5;
-    const playerColor = window.state.turn === 0 ? 'darkred' : 'darkblue';
+    const player = window.state.turn + 1;
 
     const boardX = physX - this.bx;
     const boardY = physY - this.by;
@@ -272,13 +246,12 @@ export class Game {
 
         ctx.save();
         ctx.globalAlpha = 0.5;
-        ctx.fillStyle = playerColor;
-        ctx.beginPath();
-        ctx.arc(slotCX, slotCY, r, 0, 2 * Math.PI);
-        ctx.fill();
+        drawMarble(ctx, slotCX, slotCY, r * MARBLE_IN_HOLE_SCALE, player);
         ctx.globalAlpha = 0.9;
         ctx.strokeStyle = 'white';
         ctx.lineWidth = Math.max(1, devicePixelRatio * 1.5);
+        ctx.beginPath();
+        ctx.arc(slotCX, slotCY, r, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.restore();
       }
@@ -286,16 +259,7 @@ export class Game {
 
     // On touch there is no cursor, so draw the marble at the finger position
     if (this.isTouchHover) {
-      ctx.save();
-      ctx.fillStyle = playerColor;
-      ctx.beginPath();
-      ctx.arc(physX, physY, r, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.fillStyle = 'rgba(255,255,255,0.28)';
-      ctx.beginPath();
-      ctx.arc(physX - r * 0.28, physY - r * 0.28, r * 0.42, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.restore();
+      drawMarble(ctx, physX, physY, r, player);
     }
   }
 
@@ -338,38 +302,25 @@ export class Game {
     // Use a longer transition for button clicks so the slide is clearly visible
     const saved = this.transitionTime;
     this.transitionTime = Math.max(this.transitionTime, 300);
-    this.animatedMove({ axis, index, n }, true);
+    this.animatedMove({ axis, index, n });
     this.transitionTime = saved;
     window.state.placing = true;
     window.state.turn = window.state.turn === 0 ? 1 : 0;
     return true;
   }
 
-  private render(_time: number) {
+  private render() {
     this.ctx.clearRect(0, 0, this.width, this.height);
 
     // Gap between tiles — drawn as dark board background showing through inset tile rects
     const gap = Math.max(3, Math.round(devicePixelRatio * 2));
+    const boardRadius = gap + tileCornerRadius(this.tileSize - gap * 2);
 
-    // Drop shadow: explicit dark rect offset behind the board, then board covers its top-left
-    const so = Math.round(9 * devicePixelRatio);
-    this.ctx.save();
-    this.ctx.shadowColor = 'rgba(0,0,0,0.55)';
-    this.ctx.shadowBlur = 14 * devicePixelRatio;
-    this.ctx.shadowOffsetX = 0;
-    this.ctx.shadowOffsetY = 0;
-    this.ctx.fillStyle = 'rgba(0,0,0,0.65)';
-    this.ctx.fillRect(this.bx + so, this.by + so, this.bw, this.bh);
-    this.ctx.restore();
-
-    // Dark background behind tiles — visible through the gaps
-    this.ctx.fillStyle = '#6b0b0b';
-    this.ctx.fillRect(this.bx, this.by, this.bw, this.bh);
+    drawBoardBase(this.ctx, this.bx, this.by, this.bw, this.bh, boardRadius);
 
     // Clip all tile drawing to the board perimeter so sliding tiles never bleed into the margin
     this.ctx.save();
-    this.ctx.beginPath();
-    this.ctx.rect(this.bx, this.by, this.bw, this.bh);
+    roundedRectPath(this.ctx, this.bx, this.by, this.bw, this.bh, boardRadius);
     this.ctx.clip();
 
     for (let i = 0; i < (this.moveAxis == Axis.Col ? this.columnCount : this.rowCount); i++) {
@@ -396,63 +347,15 @@ export class Game {
 
         const xf = Math.floor(x);
         const yf = Math.floor(y);
-        this.ctx.fillStyle = '#ff3632';
-        this.ctx.fillRect(xf + gap, yf + gap, this.tileSize - gap * 2, this.tileSize - gap * 2);
+        drawTile(this.ctx, xf + gap, yf + gap, this.tileSize - gap * 2);
 
-        const radiusSize = this.tileSize / 5;
-        const margin = this.tileSize / 4 - radiusSize;
-        const tile = this.board.gridTiles[row][col];
-        const slots = tile.slots;
+        const holeRadius = this.tileSize / 5;
+        const slots = this.board.gridTiles[row][col].slots;
         for (let slotRow = 0; slotRow < slots.length; slotRow++) {
           for (let slotCol = 0; slotCol < slots[slotRow].length; slotCol++) {
-            const colOffset = slotRow * 2;
-            const rowOffset = slotCol * 2;
-            const slotVal = slots[slotRow][slotCol];
-            const cx = xf + radiusSize + radiusSize * rowOffset + margin + margin * rowOffset;
-            const cy = yf + radiusSize + radiusSize * colOffset + margin + margin * colOffset;
-
-            // Base marble fill
-            if (slotVal === 1) {
-              this.ctx.fillStyle = 'darkred';
-            } else if (slotVal === 2) {
-              this.ctx.fillStyle = 'darkblue';
-            } else {
-              this.ctx.fillStyle = '#1a1a1a';
-            }
-            this.ctx.beginPath();
-            this.ctx.arc(cx, cy, radiusSize, 0, 2 * Math.PI);
-            this.ctx.fill();
-            this.ctx.closePath();
-
-            if (slotVal !== 0) {
-              // Specular highlight — top-left glint for 3D sphere look
-              this.ctx.fillStyle = 'rgba(255,255,255,0.30)';
-              this.ctx.beginPath();
-              this.ctx.arc(cx - radiusSize * 0.28, cy - radiusSize * 0.28, radiusSize * 0.42, 0, 2 * Math.PI);
-              this.ctx.fill();
-              this.ctx.closePath();
-            } else {
-              // Empty slot: concave hole.
-              // As the reference image shows, a concave surface has its gradient
-              // INVERTED relative to a convex ball:
-              //   convex ball  → light top,  dark bottom  (top face catches the light)
-              //   concave hole → dark top,   light bottom (near rim shadows the top
-              //                               interior; far wall at bottom is lit)
-              // Diagonal gradient matching the board's top-left light source:
-              // dark at top-left (near-rim shadow), bright at bottom-right (far wall lit)
-              const grad = this.ctx.createLinearGradient(
-                cx - radiusSize, cy - radiusSize,
-                cx + radiusSize, cy + radiusSize
-              );
-              grad.addColorStop(0, '#060606');
-              grad.addColorStop(0.5, '#1a1a1a');
-              grad.addColorStop(1, '#5a5a5a');
-              this.ctx.fillStyle = grad;
-              this.ctx.beginPath();
-              this.ctx.arc(cx, cy, radiusSize, 0, 2 * Math.PI);
-              this.ctx.fill();
-              this.ctx.closePath();
-            }
+            const cx = xf + (this.tileSize / 4) * (1 + 2 * slotCol);
+            const cy = yf + (this.tileSize / 4) * (1 + 2 * slotRow);
+            drawSlot(this.ctx, cx, cy, holeRadius, slots[slotRow][slotCol]);
           }
         }
       }
@@ -511,7 +414,7 @@ export class Game {
     }
 
     if (this.repaint) {
-      this.render(time);
+      this.render();
       this.repaint = false;
     }
 
@@ -519,10 +422,7 @@ export class Game {
   };
 
   private onTouchStart = (identifier: number, x: number, y: number) => {
-    if (this.locked) return;
     const pointer: Pointer = {
-      x,
-      y,
       moveX: 0,
       moveY: 0,
       col: Math.floor(((x * devicePixelRatio - this.bx) / this.bw) * this.columnCount),
@@ -548,7 +448,7 @@ export class Game {
 
     if (moveX) {
       for (let i = Math.abs(moveX); i--;) {
-        this.animatedMove({ axis: Axis.Row, index: rowIndex, n: Math.sign(moveX) }, true);
+        this.animatedMove({ axis: Axis.Row, index: rowIndex, n: Math.sign(moveX) });
       }
       pointersX.forEach((p) => (p.moveX = 0));
       window.state.placing = true;
@@ -562,15 +462,13 @@ export class Game {
 
     if (moveY) {
       for (let i = Math.abs(moveY); i--;) {
-        this.animatedMove({ axis: Axis.Col, index: colIndex, n: Math.sign(moveY) }, true);
+        this.animatedMove({ axis: Axis.Col, index: colIndex, n: Math.sign(moveY) });
       }
       pointersY.forEach((p) => (p.moveY = 0));
       window.state.placing = true;
       window.state.turn = window.state.turn === 0 ? 1 : 0;
     }
     pointer.row = row;
-    pointer.x = x;
-    pointer.y = y;
     this.repaint = true;
   };
 

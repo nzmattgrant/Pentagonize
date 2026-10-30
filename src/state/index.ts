@@ -23,11 +23,6 @@ vue.$watch(() => ({
   localStorage.pentagonize = JSON.stringify(settings)
 }, { deep: true })
 
-vue.$watch(() => [state.cols, state.rows], () => {
-  state.cols = Math.floor(Math.min(Math.max(state.cols, 1), 50))
-  state.rows = Math.floor(Math.min(Math.max(state.rows, 1), 50))
-})
-
 Vue.nextTick(() => {
   vue.$watch(() => state.darkMode, (dark: boolean) => {
     document.body.classList.toggle("dark", dark)

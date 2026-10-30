@@ -4,42 +4,16 @@ import { Tile } from './tile';
 type Grid = number[][];
 
 export class Board {
-  grid: number[][];
   gridTiles: Tile[][] = [];
   public tileSize: number = 2;//nxn because square tiles
 
-  static deserialize(grid: number[][]) {
-    return new Board(grid[0].length, grid.length, grid);
-  }
-
-  constructor(public cols: number, public rows: number, grid?: number[][]) {
-    if (grid) this.grid = grid;
-    else this.grid = [...Array(rows)].map((_, r) => [...Array(cols)].map((_, c) => r * cols + c));
-    this.gridTiles = [];
+  constructor(public cols: number, public rows: number) {
     for (let i = 0; i < rows; i++) {
       const row = [];
       for (let j = 0; j < cols; j++) {
         row.push(new Tile(this.tileSize, this.tileSize));
       }
       this.gridTiles.push(row);
-    }
-  }
-
-  serialize() {
-    return this.clone().grid;
-  }
-
-  clone() {
-    return new Board(
-      this.cols,
-      this.rows,
-      this.grid.map((row) => [...row])
-    );
-  }
-
-  reset() {
-    for (let i = this.cols * this.rows; i--; ) {
-      this.grid[Math.floor(i / this.cols)][i % this.cols] = i;
     }
   }
 
@@ -50,23 +24,6 @@ export class Board {
       this.moveColumn(move.index, move.n);
     }
   }
-
-  isSolved() {
-    for (let i = this.cols * this.rows; i--; ) {
-      if (this.grid[Math.floor(i / this.cols)][i % this.cols] != i) return false;
-    }
-    return true;
-  }
-
-  pos(index: number) {
-    for (let row = this.rows; row--; ) {
-      for (let col = this.cols; col--; ) {
-        if (this.grid[row][col] == index) return { row, col };
-      }
-    }
-    throw new Error('Index not found in board');
-  }
-
 
   getGameWinner(){
   
@@ -124,19 +81,11 @@ export class Board {
   }
 
   private moveRow(index: number, n: number) {
-    let row = this.grid[index];
-    this.grid[index] = row.map((_, i) => row[(((i - n) % this.cols) + this.cols) % this.cols]);
     const tileRow = this.gridTiles[index];
     this.gridTiles[index] = tileRow.map((_, i) => tileRow[(((i - n) % this.cols) + this.cols) % this.cols]);
   }
 
   private moveColumn(index: number, n: number) {
-    const col = [...Array(this.rows)].map((_, i) => this.grid[i][index]);
-
-    for (let i = 0; i < this.rows; i++) {
-      this.grid[i][index] = col[(((i - n) % this.rows) + this.rows) % this.rows];
-    }
-
     const tileCol = [...Array(this.rows)].map((_, i) => this.gridTiles[i][index]);
 
     for (let i = 0; i < this.rows; i++) {

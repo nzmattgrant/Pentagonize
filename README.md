@@ -7,11 +7,11 @@
 
 ### `src/state/`
 
-Contains most of the higher-level game logic, such as the timer, various events, and many other things.
+Holds the shared game state (turn, phase, settings) and persists settings to local storage.
 
 ### `src/game/`
 
-Contains the core game code such as move mechanics, canvas rendering
+Contains the core game code such as move mechanics, win detection and canvas rendering (`draw.ts` holds the piece styling).
 
 ### `src/components/`
 
