@@ -30,6 +30,8 @@ const MARBLE_SHADOW_INNER = 0.5;
 const MARBLE_SHADOW_OUTER = 1.2;
 const MARBLE_SHADOW_ALPHA = 0.4;
 export const MARBLE_IN_HOLE_SCALE = 0.88;
+// How far the marble's shadow reaches from its centre
+export const MARBLE_EXTENT = MARBLE_SHADOW_OFFSET + MARBLE_SHADOW_OUTER;
 
 const HOLE_RIM_WIDTH = 0.1;
 

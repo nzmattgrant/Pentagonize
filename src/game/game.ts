@@ -1,8 +1,10 @@
 import { Axis, Board, Move } from '.';
-import { drawArrowButton, drawBoardBase, drawMarble, drawSlot, drawTile, MARBLE_IN_HOLE_SCALE, roundedRectPath, tileCornerRadius } from './draw';
+import { drawArrowButton, drawBoardBase, drawMarble, drawSlot, drawTile, MARBLE_EXTENT, MARBLE_IN_HOLE_SCALE, roundedRectPath, tileCornerRadius } from './draw';
 
 // Fraction of the board margin
 const ARROW_BUTTON_RADIUS = 0.34;
+// Fraction of the tile size
+const HOLE_RADIUS = 0.2;
 
 interface Transition {
   value: number;
@@ -104,6 +106,7 @@ export class Game {
 
     this.tileSize = Math.ceil(this.bw / this.columnCount + 0.1);
 
+    this.marbleCursorTurn = -1;
     this.repaint = true;
   }
 
@@ -158,15 +161,12 @@ export class Game {
     return true;
   }
 
-  // Generates a data-URL cursor shaped like the current player's marble.
+  // Generates a data-URL cursor shaped like the current player's marble, the same size as a placed marble.
   private generateMarbleCursor(): string {
-    const size = 40;
+    const r = (this.tileSize / devicePixelRatio) * HOLE_RADIUS * MARBLE_IN_HOLE_SCALE;
+    const center = Math.ceil(r * MARBLE_EXTENT);
     const c = document.createElement('canvas');
-    c.width = size;
-    c.height = size;
-    const center = size / 2;
-    // Small enough that the marble's shadow fits inside the cursor image
-    const r = size * 0.36;
+    c.width = c.height = 2 * center;
     drawMarble(c.getContext('2d')!, center, center, r, window.state.turn + 1);
     return `url('${c.toDataURL()}') ${center} ${center}, crosshair`;
   }
@@ -199,7 +199,7 @@ export class Game {
     const ctx = this.ctx;
     const physX = this.cursorX * devicePixelRatio;
     const physY = this.cursorY * devicePixelRatio;
-    const r = this.tileSize / 5;
+    const r = this.tileSize * HOLE_RADIUS;
     const player = window.state.turn + 1;
 
     const boardX = physX - this.bx;
@@ -237,7 +237,7 @@ export class Game {
 
     // On touch there is no cursor, so draw the marble at the finger position
     if (this.isTouchHover) {
-      drawMarble(ctx, physX, physY, r, player);
+      drawMarble(ctx, physX, physY, r * MARBLE_IN_HOLE_SCALE, player);
     }
   }
 
@@ -327,7 +327,7 @@ export class Game {
         const yf = Math.floor(y);
         drawTile(this.ctx, xf + gap, yf + gap, this.tileSize - gap * 2);
 
-        const holeRadius = this.tileSize / 5;
+        const holeRadius = this.tileSize * HOLE_RADIUS;
         const slots = this.board.gridTiles[row][col].slots;
         for (let slotRow = 0; slotRow < slots.length; slotRow++) {
           for (let slotCol = 0; slotCol < slots[slotRow].length; slotCol++) {
